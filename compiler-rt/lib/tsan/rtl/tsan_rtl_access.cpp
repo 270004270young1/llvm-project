@@ -325,7 +325,7 @@ bool CheckRaces(ThreadState* thr, RawShadow* shadow_mem, Shadow cur,
     goto SHARED;
 
 STORE : {
-  if (typ & kAccessCheckOnly || typ & kAccessRead)
+  if (typ & kAccessCheckOnly)
     return false;
   // We could also replace different sid's if access is the same,
   // rw weaker and happens before. However, just checking access below
@@ -350,6 +350,8 @@ STORE : {
     if (UNLIKELY(index == 0))
       index = (atomic_load_relaxed(&thr->trace_pos) / 2) % 16;
   }
+  if(typ & kAccessRead)
+    return false;
   StoreShadow(&shadow_mem[index / 4], cur.raw());
   // We could zero other slots determined by rewrite_mask.
   // That would help other threads to evict better slots,
