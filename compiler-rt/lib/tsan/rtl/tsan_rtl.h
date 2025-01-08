@@ -158,6 +158,7 @@ struct alignas(SANITIZER_CACHE_LINE_SIZE) TidSlot {
 // This struct is stored in TLS.
 struct alignas(SANITIZER_CACHE_LINE_SIZE) ThreadState {
   FastState fast_state;
+  RawShadow testShadow;
   int ignore_sync;
 #if !SANITIZER_GO
   int ignore_interceptors;
@@ -172,6 +173,7 @@ struct alignas(SANITIZER_CACHE_LINE_SIZE) ThreadState {
   // Technically `current` should be a separate THREADLOCAL variable;
   // but it is placed here in order to share cache line with previous fields.
   ThreadState* current;
+
 
   atomic_sint32_t pending_signals;
 

@@ -350,9 +350,8 @@ STORE : {
     if (UNLIKELY(index == 0))
       index = (atomic_load_relaxed(&thr->trace_pos) / 2) % 16;
   }
-  if(typ & kAccessRead)
-    return false;
-  StoreShadow(&shadow_mem[index / 4], cur.raw());
+
+  StoreShadow(&(thr->testShadow), cur.raw());
   // We could zero other slots determined by rewrite_mask.
   // That would help other threads to evict better slots,
   // but it's unclear if it's worth it.
