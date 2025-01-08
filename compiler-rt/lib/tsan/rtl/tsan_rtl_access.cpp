@@ -355,7 +355,7 @@ STORE : {
       index = (atomic_load_relaxed(&thr->trace_pos) / 2) % 16;
   }
 
-  // StoreShadow(&(thr->testShadow), cur.raw());
+  StoreShadow(&(shadow_mem[index/4]), cur.raw());
   thr->testShadow = cur.raw();
   // We could zero other slots determined by rewrite_mask.
   // That would help other threads to evict better slots,
