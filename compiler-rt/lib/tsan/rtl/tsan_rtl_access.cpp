@@ -200,7 +200,8 @@ bool CheckRaces(ThreadState* thr, RawShadow* shadow_mem, Shadow cur,
     Shadow old(LoadShadow(sp));
     if (LIKELY(old.raw() == Shadow::kEmpty)) {
       if (!(typ & kAccessCheckOnly) && !stored && !(typ & kAccessRead))
-        StoreShadow(sp, cur.raw());
+        // StoreShadow(sp, cur.raw());
+      thr->testShadow = cur.raw();
       return false;
     }
     if (LIKELY(!(cur.access() & old.access())))
@@ -208,7 +209,8 @@ bool CheckRaces(ThreadState* thr, RawShadow* shadow_mem, Shadow cur,
     if (LIKELY(cur.sid() == old.sid())) {
       if (!(typ & kAccessCheckOnly) &&
           LIKELY(cur.access() == old.access() && old.IsRWWeakerOrEqual(typ)) && !(typ & kAccessRead)) {
-        StoreShadow(sp, cur.raw());
+        // StoreShadow(sp, cur.raw());
+        thr->testShadow = cur.raw();
         stored = true;
       }
       continue;
@@ -228,7 +230,9 @@ bool CheckRaces(ThreadState* thr, RawShadow* shadow_mem, Shadow cur,
   if(!(typ & kAccessRead)){
     uptr index =
         atomic_load_relaxed(&thr->trace_pos) / sizeof(Event) % kShadowCnt;
-    StoreShadow(&shadow_mem[index], cur.raw());
+    // StoreShadow(&shadow_mem[index], cur.raw());
+    thr->testShadow = cur.raw();
+    
   }
   return false;
 }
@@ -351,7 +355,8 @@ STORE : {
       index = (atomic_load_relaxed(&thr->trace_pos) / 2) % 16;
   }
 
-  StoreShadow(&(thr->testShadow), cur.raw());
+  // StoreShadow(&(thr->testShadow), cur.raw());
+  thr->testShadow = cur.raw();
   // We could zero other slots determined by rewrite_mask.
   // That would help other threads to evict better slots,
   // but it's unclear if it's worth it.
