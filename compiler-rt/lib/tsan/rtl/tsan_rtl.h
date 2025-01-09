@@ -158,7 +158,6 @@ struct alignas(SANITIZER_CACHE_LINE_SIZE) TidSlot {
 // This struct is stored in TLS.
 struct alignas(SANITIZER_CACHE_LINE_SIZE) ThreadState {
   FastState fast_state;
-  RawShadow testShadow;
   int ignore_sync;
 #if !SANITIZER_GO
   int ignore_interceptors;
