@@ -71,6 +71,12 @@ inline Epoch EpochInc(Epoch epoch) {
 
 inline bool EpochOverflow(Epoch epoch) { return epoch == kEpochOver; }
 
+inline constexpr uptr ceil(float num){
+  return (static_cast<float>(static_cast<uptr>(num)) == num)
+      ? static_cast<uptr>(num)
+      : static_cast<uptr>(num) + ((num > 0) ? 1 : 0);
+}
+
 const uptr kShadowStackSize = 64 * 1024;
 
 // Count of shadow values in a shadow cell.
@@ -95,6 +101,15 @@ const uptr kMetaShadowSize = 4;
 
 // All addresses and PCs are assumed to be compressable to that many bits.
 const uptr kCompressedAddrBits = 44;
+
+// TLS local read access buffer size
+const uptr kLocalReadMapSize = 1027;
+
+// Read access map size for local read tracking.
+const uptr kReadAccessMapSize = 10027;
+// Each bit represent whether a thread participate in the memory access.
+constexpr uptr kReadAccessMapThreadCellSize = ceil(kThreadSlotCount / (sizeof(u64) * 8ULL));
+
 
 #if TSAN_NO_HISTORY
 const bool kCollectHistory = false;

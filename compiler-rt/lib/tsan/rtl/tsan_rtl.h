@@ -34,6 +34,7 @@
 #include "sanitizer_common/sanitizer_suppressions.h"
 #include "sanitizer_common/sanitizer_thread_registry.h"
 #include "sanitizer_common/sanitizer_vector.h"
+#include "sanitizer_common/sanitizer_hash.h"
 #include "tsan_defs.h"
 #include "tsan_flags.h"
 #include "tsan_ignoreset.h"
@@ -47,6 +48,8 @@
 #include "tsan_sync.h"
 #include "tsan_trace.h"
 #include "tsan_vector_clock.h"
+#include "tsan_local_read_map.h"
+#include "tsan_read_access_map.h"
 
 #if SANITIZER_WORDSIZE != 64
 # error "ThreadSanitizer is supported only on 64-bit platforms"
@@ -177,6 +180,7 @@ struct alignas(SANITIZER_CACHE_LINE_SIZE) ThreadState {
   atomic_sint32_t pending_signals;
 
   VectorClock clock;
+  LocalReadMap localRead;
 
   // This is a slow path flag. On fast path, fast_state.GetIgnoreBit() is read.
   // We do not distinguish beteween ignoring reads and writes
@@ -803,6 +807,13 @@ void FuncExit(ThreadState *thr) {
   DCHECK_LT(thr->shadow_stack_pos, thr->shadow_stack_end);
 #endif
   thr->shadow_stack_pos--;
+}
+
+template<uptr kSize>
+inline int CalcHash(uptr addr) {
+  MurMur2Hash64Builder hasher;
+  hasher.add(static_cast<u64>(addr));
+  return static_cast<uptr>(hasher.get()) % kSize;
 }
 
 #if !SANITIZER_GO
