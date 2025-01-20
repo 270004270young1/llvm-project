@@ -11,26 +11,33 @@ LocalReadMap::LocalReadMap(){
       for (int j = 0; j < kShadowCnt; j++) {
         // localReadMap_[i][j].key = 0UL;
         // localReadMap_[i][j].val = Shadow::kEmpty;
-        localReadMap_[i][j] = Shadow::kEmpty;
-
+        StoreShadow(&localReadMap_[i][j],Shadow::kEmpty);
+        atomic_store_relaxed(&addressMap_[i][j],0UL);
       }
     }
 }
 
-bool LocalReadMap::Add(uptr addr, RawShadow rawShadow) {
+// We only have one producer here and multiple consumer so we don't need 
+// to worry about the multiple threads write to the same addressMap and
+// localReadMap
+bool LocalReadMap::AddOrUpdate(uptr addr, RawShadow rawShadow) {
   int index = CalcHash<kLocalReadMapSize>(addr);
 
   int pos = FindMatchedOrEmptySlot(index,addr);
   if(pos == -1)
     return false;
-    
+  
+  atomic_store_relaxed(&addressMap_[index][pos],addr);
   StoreShadow(&localReadMap_[index][pos],rawShadow);
   return true;
 }
 
 void LocalReadMap::Remove(uptr addr) {
   int index = CalcHash<kLocalReadMapSize>(addr);
-  int pos = FindMatchedOrEmptySlot(index,addr);
+  int pos = FindMatchedSlot(index,addr);
+  if(pos == -1)
+    return;
+
   StoreShadow(&localReadMap_[index][pos],Shadow::kEmpty);
 
   // for (int i = 0; i < kShadowCnt; i++) {

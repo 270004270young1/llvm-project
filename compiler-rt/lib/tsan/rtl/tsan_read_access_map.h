@@ -10,7 +10,7 @@ struct KeyValPair{
     Val val;
 };
 
-typedef KeyValPair<uptr,u64[kReadAccessMapThreadCellSize]> Pair;
+typedef KeyValPair<atomic_uintptr_t,atomic_uint64_t[kReadAccessMapThreadCellSize]> Pair;
 
 class ReadAccessMap{
 
@@ -29,7 +29,7 @@ class ReadAccessMap{
         Pair* ReadAccessMap::FindMatchedPair(int index, uptr addr);
         Pair* ReadAccessMap::FindEmptyPair(int index);
 
-        KeyValPair<uptr,u64[kReadAccessMapThreadCellSize]> readAccessMap_[kReadAccessMapSize][kShadowCnt];
+        KeyValPair<atomic_uintptr_t,atomic_uint64_t[kReadAccessMapThreadCellSize]> readAccessMap_[kReadAccessMapSize][kShadowCnt];
 };
 
 

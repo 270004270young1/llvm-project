@@ -13,7 +13,7 @@ class LocalReadMap {
  public:
   LocalReadMap();
 
-  bool Add(uptr addr, RawShadow shadow);
+  bool AddOrUpdate(uptr addr, RawShadow shadow);
   void Remove(uptr addr);
   RawShadow Get(uptr addr);
 
