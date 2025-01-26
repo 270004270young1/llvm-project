@@ -383,6 +383,9 @@ struct Context {
   uptr mapped_shadow_begin;
   uptr mapped_shadow_end;
 #endif
+
+  ReadAccessMap read_access_map;
+
 };
 
 extern Context *ctx;  // The one and the only global runtime context.

@@ -126,6 +126,22 @@ void ReadAccessMap::Remove(uptr addr) {
   }
 }
 
+bool ReadAccessMap::Contain(uptr addr, Sid sid){
+
+  int index = CalcHash<kReadAccessMapSize>(addr);
+  u64 bits = 1ULL << (static_cast<u8>(sid) & 63ULL);
+  for(unsigned i=0;i<kShadowCnt;i++){
+    if(atomic_load_acquire(&readAccessMap_[index][i].key) == addr){
+      
+      u64 cell = atomic_load_acquire(&readAccessMap_[index][i].val[static_cast<u8>(sid) >> 6]);
+
+      return cell & bits;
+    }
+  }
+  return false;
+
+}
+
 void UpdateCell(Pair* pair, Sid sid) {
   u64 cell;
   u64 bits = 1ULL << (static_cast<u8>(sid) & 63ULL);

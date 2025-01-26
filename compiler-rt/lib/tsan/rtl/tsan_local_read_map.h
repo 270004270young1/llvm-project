@@ -11,7 +11,7 @@ namespace __tsan {
 
 class LocalReadMap {
  public:
-  LocalReadMap();
+  LocalReadMap(Sid sid);
 
   bool AddOrUpdate(uptr addr, RawShadow shadow);
   void Remove(uptr addr);
@@ -25,9 +25,9 @@ class LocalReadMap {
  private:
   int FindEmptySlot(int index);
   int FindMatchedSlot(int index, uptr addr);
-  int GetMatchedOrEmptySlot(int index, uptr addr);
+  int FindMatchedOrEmptySlot(int index, uptr addr);
 
-
+  Sid sid;
   VECTOR_ALIGNED RawShadow localReadMap_[kLocalReadMapSize][kShadowCnt];
   VECTOR_ALIGNED atomic_uintptr_t addressMap_[kLocalReadMapSize][kShadowCnt];
   
