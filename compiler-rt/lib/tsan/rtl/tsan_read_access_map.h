@@ -27,7 +27,7 @@ class ReadAccessMap{
 
     private:
         Pair* ReadAccessMap::FindMatchedPair(int index, uptr addr);
-        Pair* ReadAccessMap::FindEmptyPair(int index);
+        Pair* ReadAccessMap::GetEmptyPair(int index, uptr addr);
 
         KeyValPair<atomic_uintptr_t,atomic_uint64_t[kReadAccessMapThreadCellSize]> readAccessMap_[kReadAccessMapSize][kShadowCnt];
 };

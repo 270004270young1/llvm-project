@@ -23,11 +23,10 @@ LocalReadMap::LocalReadMap(){
 bool LocalReadMap::AddOrUpdate(uptr addr, RawShadow rawShadow) {
   int index = CalcHash<kLocalReadMapSize>(addr);
 
-  int pos = FindMatchedOrEmptySlot(index,addr);
+  int pos = GetMatchedOrEmptySlot(index,addr);
   if(pos == -1)
     return false;
   
-  atomic_store_relaxed(&addressMap_[index][pos],addr);
   StoreShadow(&localReadMap_[index][pos],rawShadow);
   return true;
 }
@@ -38,8 +37,9 @@ void LocalReadMap::Remove(uptr addr) {
   if(pos == -1)
     return;
 
-  StoreShadow(&localReadMap_[index][pos],Shadow::kEmpty);
 
+  StoreShadow(&localReadMap_[index][pos],Shadow::kEmpty);
+  atomic_store_release(&addressMap_[index][pos],0UL);
   // for (int i = 0; i < kShadowCnt; i++) {
   //   RawShadow oldShadow = LoadShadow(&localReadMap_[index][i]);
   //   if (ShadowToMem(&oldShadow) == addr) {
@@ -61,7 +61,7 @@ RawShadow LocalReadMap::Get(uptr addr){
 
   int index = CalcHash<kLocalReadMapSize>(addr);
   for(int i=0;i<kShadowCnt;i++){
-    if(static_cast<uptr>(atomic_load_relaxed(&addressMap_[index][i])) == addr){
+    if(static_cast<uptr>(atomic_load_acquire(&addressMap_[index][i])) == addr){
       return LoadShadow(&localReadMap_[index][i]);
     }
   }
@@ -82,7 +82,7 @@ int LocalReadMap::FindEmptySlot(int index) {
 
 int LocalReadMap::FindMatchedSlot(int index, uptr addr){
   for (int i = 0; i < kShadowCnt; i++) {
-    if (static_cast<uptr>(atomic_load_relaxed(&addressMap_[index][i])) == addr) {
+    if (static_cast<uptr>(atomic_load_acquire(&addressMap_[index][i])) == addr) {
       return i;
     }
   }
@@ -90,19 +90,20 @@ int LocalReadMap::FindMatchedSlot(int index, uptr addr){
   return -1;
 }
 
-int LocalReadMap::FindMatchedOrEmptySlot(int index, uptr addr){
+int LocalReadMap::GetMatchedOrEmptySlot(int index, uptr addr){
 
-  RawShadow oldShadows[kShadowCnt];
   for(int i=0;i<kShadowCnt;i++){
-    if(static_cast<uptr>(atomic_load_relaxed(&addressMap_[index][i])) == addr){
+    if(static_cast<uptr>(atomic_load_acquire(&addressMap_[index][i])) == addr){
       return i;
     }
-    oldShadows[i] = LoadShadow(&localReadMap_[index][i]);
   }
 
   for(int i=0;i<kShadowCnt;i++){
-    if(oldShadows[i] == Shadow::kEmpty)
+    if(static_cast<uptr>(atomic_load_acquire(&addressMap_[index][i])) != 0UL)
+      continue;
+    if(atomic_compare_exchange_strong(&addressMap_[index][i],0UL,addr,memory_order_acquire)){
       return i;
+    }
   }
 
   return -1;
