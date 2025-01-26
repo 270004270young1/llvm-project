@@ -200,7 +200,7 @@ bool CheckRaces(ThreadState* thr, RawShadow* shadow_mem, Shadow cur,
     Shadow old(LoadShadow(sp));
     if (LIKELY(old.raw() == Shadow::kEmpty)) {
       if (!(typ & kAccessCheckOnly) && !stored)
-      StoreShadow(sp, cur.raw());
+        StoreShadow(sp, cur.raw());
       return false;
     }
     if (LIKELY(!(cur.access() & old.access())))

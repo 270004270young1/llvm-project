@@ -51,9 +51,11 @@ public:
     K_Temp = 2,
     K_Decl = 3,
     K_Elem = 5,
+    K_InitList = 6
   };
 
   static InitLink This() { return InitLink{K_This}; }
+  static InitLink InitList() { return InitLink{K_InitList}; }
   static InitLink Field(unsigned Offset) {
     InitLink IL{K_Field};
     IL.Offset = Offset;
@@ -205,6 +207,7 @@ public:
   bool VisitCXXNewExpr(const CXXNewExpr *E);
   bool VisitCXXDeleteExpr(const CXXDeleteExpr *E);
   bool VisitBlockExpr(const BlockExpr *E);
+  bool VisitCXXTypeidExpr(const CXXTypeidExpr *E);
 
   // Statements.
   bool visitCompoundStmt(const CompoundStmt *S);
