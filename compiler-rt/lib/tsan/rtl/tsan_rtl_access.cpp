@@ -199,7 +199,7 @@ bool CheckRaces(ThreadState* thr, RawShadow* shadow_mem, Shadow cur,
     RawShadow* sp = &shadow_mem[idx];
     Shadow old(LoadShadow(sp));
     if (LIKELY(old.raw() == Shadow::kEmpty)) {
-      if (!(typ & kAccessCheckOnly) && !stored && !(typ & kAccessRead))
+      if (!(typ & kAccessCheckOnly) && !stored)
       StoreShadow(sp, cur.raw());
       return false;
     }
@@ -207,7 +207,7 @@ bool CheckRaces(ThreadState* thr, RawShadow* shadow_mem, Shadow cur,
       continue;
     if (LIKELY(cur.sid() == old.sid())) {
       if (!(typ & kAccessCheckOnly) &&
-          LIKELY(cur.access() == old.access() && old.IsRWWeakerOrEqual(typ)) && !(typ & kAccessRead)) {
+          LIKELY(cur.access() == old.access() && old.IsRWWeakerOrEqual(typ))) {
         StoreShadow(sp, cur.raw());
         stored = true;
       }
@@ -225,12 +225,10 @@ bool CheckRaces(ThreadState* thr, RawShadow* shadow_mem, Shadow cur,
   if (LIKELY(stored))
     return false;
   // Choose a random candidate slot and replace it.
-  if(!(typ & kAccessRead)){
-    uptr index =
-        atomic_load_relaxed(&thr->trace_pos) / sizeof(Event) % kShadowCnt;
-    StoreShadow(&shadow_mem[index], cur.raw());
+  uptr index =
+      atomic_load_relaxed(&thr->trace_pos) / sizeof(Event) % kShadowCnt;
+  StoreShadow(&shadow_mem[index], cur.raw());
     
-  }
   return false;
 }
 
