@@ -16,11 +16,11 @@ ReadAccessMap::ReadAccessMap() {
 }
 
 bool ReadAccessMap::Add(uptr addr, Sid sid) {
-  int index = CalcHash<kReadAccessMapSize>(addr);
+  const int index = CalcHash<kReadAccessMapSize>(addr);
 
   if (Pair* pair = FindMatchedPair(index, addr)) {
-    u64 cell = atomic_load_acquire(&pair->val[static_cast<u8>(sid) >> 6]);
-    u64 bits = 1ULL << (static_cast<u8>(sid) & 63ULL);
+    const u64 cell = static_cast<u64>(atomic_load_acquire(&pair->val[static_cast<u8>(sid) >> 6]));
+    const u64 bits = 1ULL << (static_cast<u8>(sid) & 63ULL);
     if (cell & bits) {
       return true;
     }
@@ -29,14 +29,14 @@ bool ReadAccessMap::Add(uptr addr, Sid sid) {
   }
 
   for (int i = 0; i < kShadowCnt; i++) {
-    uptr key = atomic_load_acquire(&readAccessMap_[index][i].key);
+    const uptr key = static_cast<uptr>(atomic_load_acquire(&readAccessMap_[index][i].key));
     if (key != 0UL || key != addr)
       continue;
 
-    u64 bits = 1ULL << (static_cast<u8>(sid) & 63ULL);
+    const u64 bits = 1ULL << (static_cast<u8>(sid) & 63ULL);
     if (key == addr) {
-      u64 cell = atomic_load_acquire(
-          &readAccessMap_[index][i].val[static_cast<u8>(sid) >> 6]);
+      const u64 cell = static_cast<u64>(atomic_load_acquire(
+          &readAccessMap_[index][i].val[static_cast<u8>(sid) >> 6]));
       if (cell & bits) {
         return true;
       }
@@ -44,47 +44,25 @@ bool ReadAccessMap::Add(uptr addr, Sid sid) {
       return true;
     }
 
-    if (atomic_compare_exchange_strong(&readAccessMap_[index][i].key, 0UL, addr,
+    uptr zero = 0UL;
+    if (atomic_compare_exchange_strong(&readAccessMap_[index][i].key, &zero, addr,
                                        memory_order_acq_rel)) {
       UpdateCell(&readAccessMap_[index][i], sid);
       return true;
     }
 
-    if (atomic_load_acquire(&readAccessMap_[index][i].key) == addr) {
+    if (static_cast<uptr>(atomic_load_acquire(&readAccessMap_[index][i].key)) == addr) {
       UpdateCell(&readAccessMap_[index][i], sid);
       return true;
     }
   }
 
   return false;
-  // bool matched = pair != nullptr;
-  // pair = pair == nullptr ? FindEmptyPair(index) : pair;
-
-  // if (pair == nullptr)
-  //   return false;
-
-  // u64 cell = atomic_load_acquire(&pair->val[static_cast<u8>(sid) >> 6]);
-  // u64 bits = 1ULL << (static_cast<u8>(sid) & 63ULL);
-  // if (cell & bits) {
-  //   return true;
-  // }
-  // if (atomic_load_relaxed(&pair->key) == 0UL &&
-  // !atomic_compare_exchange_strong(&pair->key, 0UL, addr,
-  //                                     memory_order_relaxed))
-  //   return false;
-
-  // do{
-  //   cell = atomic_load_relaxed(&pair->val[static_cast<u8>(sid) >> 6]);
-  // }
-  // while(!atomic_compare_exchange_weak(&pair->val[static_cast<u8>(sid) >>
-  // 6],&cell,cell|bits,memory_order_acq_rel));
-  // // atomic_store_release(&pair->val[static_cast<u8>(sid) >> 6], cell |
-  // bits); return true;
 }
 
 Pair* ReadAccessMap::FindMatchedPair(int index, uptr addr) {
   for (int i = 0; i < kShadowCnt; i++) {
-    if (atomic_load_acquire(&readAccessMap_[index][i].key) == addr) {
+    if (static_cast<uptr>(atomic_load_acquire(&readAccessMap_[index][i].key)) == addr) {
       return &readAccessMap_[index][i];
     }
   }
@@ -94,19 +72,20 @@ Pair* ReadAccessMap::FindMatchedPair(int index, uptr addr) {
 
 Pair* ReadAccessMap::GetEmptyPair(int index, uptr addr) {
   for (int i = 0; i < kShadowCnt; i++) {
-    uptr key = atomic_load_acquire(&readAccessMap_[index][i].key);
+    const uptr key = static_cast<uptr>(atomic_load_acquire(&readAccessMap_[index][i].key));
     if (key != 0UL || key != addr)
       continue;
 
     if (key == addr)
       return &readAccessMap_[index][i];
 
-    if (atomic_compare_exchange_strong(&readAccessMap_[index][i].key, 0UL, addr,
+    uptr zero = 0UL;
+    if (atomic_compare_exchange_strong(&readAccessMap_[index][i].key, &zero, addr,
                                        memory_order_relaxed)) {
       return &readAccessMap_[index][i];
     }
 
-    if (atomic_load_relaxed(&readAccessMap_[index][i].key) == addr) {
+    if (static_cast<uptr>(atomic_load_relaxed(&readAccessMap_[index][i].key)) == addr) {
       return &readAccessMap_[index][i];
     }
   }
@@ -114,9 +93,9 @@ Pair* ReadAccessMap::GetEmptyPair(int index, uptr addr) {
 }
 
 void ReadAccessMap::Remove(uptr addr) {
-  int index = CalcHash<kReadAccessMapSize>(addr);
+  const int index = CalcHash<kReadAccessMapSize>(addr);
   for (int i = 0; i < kShadowCnt; i++) {
-    if (atomic_load_acquire(&readAccessMap_[index][i].key) != addr)
+    if (static_cast<uptr>(atomic_load_acquire(&readAccessMap_[index][i].key)) != addr)
       continue;
 
     for (int j = 0; j < kReadAccessMapThreadCellSize; j++) {
@@ -128,12 +107,12 @@ void ReadAccessMap::Remove(uptr addr) {
 
 bool ReadAccessMap::Contain(uptr addr, Sid sid){
 
-  int index = CalcHash<kReadAccessMapSize>(addr);
-  u64 bits = 1ULL << (static_cast<u8>(sid) & 63ULL);
+  const int index = CalcHash<kReadAccessMapSize>(addr);
+  const u64 bits = 1ULL << (static_cast<u8>(sid) & 63ULL);
   for(unsigned i=0;i<kShadowCnt;i++){
-    if(atomic_load_acquire(&readAccessMap_[index][i].key) == addr){
+    if(static_cast<uptr>(atomic_load_acquire(&readAccessMap_[index][i].key)) == addr){
       
-      u64 cell = atomic_load_acquire(&readAccessMap_[index][i].val[static_cast<u8>(sid) >> 6]);
+      u64 cell = static_cast<u64>(atomic_load_acquire(&readAccessMap_[index][i].val[static_cast<u8>(sid) >> 6]));
 
       return cell & bits;
     }
@@ -142,12 +121,41 @@ bool ReadAccessMap::Contain(uptr addr, Sid sid){
 
 }
 
+bool ReadAccessMap::Get(uptr addr, ThreadState* thr, Sid* sids){
+
+  const int index = CalcHash<kReadAccessMapSize>(addr);
+  Pair* pair = FindMatchedPair(index,addr);
+  if(pair == nullptr)
+    return false;
+  const uptr tracePos = atomic_load_relaxed(&thr->trace_pos);
+  
+  const unsigned startCellBit = static_cast<unsigned>(tracePos / sizeof(Event)) % (sizeof(u64)*8);
+  const unsigned startCellIndex = static_cast<unsigned>(tracePos / sizeof(Event) % kShadowCnt);
+  u64 curBit = 1ULL<<startCellBit;
+  u64 cell = atomic_load_acquire(&pair->val[startCellIndex]);
+  unsigned curCellIndex = startCellIndex;
+  unsigned sidIndex = 0U;
+  do{
+
+    if(cell & curBit){      
+      sids[sidIndex++] = static_cast<Sid>(64U*curCellIndex+__builtin_ffsll(curBit)-1U);
+    }
+    if(curBit==1ULL){
+      curCellIndex = (curCellIndex+1)%kShadowCnt;
+      cell = atomic_load_acquire(&pair->val[curCellIndex]);
+      curBit = 1ULL<<63;
+    }else{
+      curBit>>=1;
+    }
+  }while(sidIndex<kShadowCnt && !(curBit==(1ULL<<startCellBit) && curCellIndex==startCellIndex));
+  return true;
+
+}
+
 void UpdateCell(Pair* pair, Sid sid) {
-  u64 cell;
-  u64 bits = 1ULL << (static_cast<u8>(sid) & 63ULL);
-  do {
-    cell = atomic_load_acquire(&pair->val[static_cast<u8>(sid) >> 6]);
-  } while (!atomic_compare_exchange_weak(&pair->val[static_cast<u8>(sid) >> 6],
+  u64 cell = static_cast<u64>(atomic_load_acquire(&pair->val[static_cast<u8>(sid) >> 6]));
+  const u64 bits = 1ULL << (static_cast<u8>(sid) & 63ULL);
+  while (!atomic_compare_exchange_weak(&pair->val[static_cast<u8>(sid) >> 6],
                                          &cell, cell | bits,
                                          memory_order_release));
 }

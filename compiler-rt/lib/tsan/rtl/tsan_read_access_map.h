@@ -20,6 +20,7 @@ class ReadAccessMap{
         bool Add(uptr addr, Sid sid);
         void Remove(uptr addr);
         bool Contain(uptr addr, Sid sid);
+        bool Get(uptr addr, ThreadState* thr, Sid* sids);
 
         ReadAccessMap(const ReadAccessMap&) = delete;
         ReadAccessMap(ReadAccessMap&&) = delete;

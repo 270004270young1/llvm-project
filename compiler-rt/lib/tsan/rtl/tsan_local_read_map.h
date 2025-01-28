@@ -27,7 +27,7 @@ class LocalReadMap {
   int FindMatchedSlot(int index, uptr addr);
   int FindMatchedOrEmptySlot(int index, uptr addr);
 
-  Sid sid;
+  Sid sid_;
   VECTOR_ALIGNED RawShadow localReadMap_[kLocalReadMapSize][kShadowCnt];
   VECTOR_ALIGNED atomic_uintptr_t addressMap_[kLocalReadMapSize][kShadowCnt];
   

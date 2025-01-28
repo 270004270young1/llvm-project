@@ -8,7 +8,7 @@
 
 namespace __tsan {
 
-LocalReadMap::LocalReadMap(Sid sid):sid(sid){
+LocalReadMap::LocalReadMap(Sid sid):sid_(sid){
     for (int i = 0; i < kThreadSlotCount; i++) {
       for (int j = 0; j < kShadowCnt; j++) {
         // localReadMap_[i][j].key = 0UL;
@@ -23,9 +23,9 @@ LocalReadMap::LocalReadMap(Sid sid):sid(sid){
 // to worry about the multiple threads write to the same addressMap and
 // localReadMap
 bool LocalReadMap::AddOrUpdate(uptr addr, RawShadow rawShadow) {
-  int index = CalcHash<kLocalReadMapSize>(addr);
+  const int index = CalcHash<kLocalReadMapSize>(addr);
 
-  int pos = FindMatchedOrEmptySlot(index,addr);
+  const int pos = FindMatchedOrEmptySlot(index,addr);
   if(pos == -1)
     return false;
   StoreShadow(&localReadMap_[index][pos],rawShadow);
@@ -35,8 +35,8 @@ bool LocalReadMap::AddOrUpdate(uptr addr, RawShadow rawShadow) {
 }
 
 void LocalReadMap::Remove(uptr addr) {
-  int index = CalcHash<kLocalReadMapSize>(addr);
-  int pos = FindMatchedSlot(index,addr);
+  const int index = CalcHash<kLocalReadMapSize>(addr);
+  const int pos = FindMatchedSlot(index,addr);
   if(pos == -1)
     return;
 
@@ -46,7 +46,7 @@ void LocalReadMap::Remove(uptr addr) {
 
 RawShadow LocalReadMap::Get(uptr addr){
 
-  int index = CalcHash<kLocalReadMapSize>(addr);
+  const int index = CalcHash<kLocalReadMapSize>(addr);
   for(int i=0;i<kShadowCnt;i++){
     if(static_cast<uptr>(atomic_load_acquire(&addressMap_[index][i])) == addr){
       return LoadShadow(&localReadMap_[index][i]);
@@ -89,7 +89,7 @@ int LocalReadMap::FindMatchedOrEmptySlot(int index, uptr addr){
     uptr loadedAddr = static_cast<uptr>(atomic_load_relaxed(&addressMap_[index][i]));
     if(loadedAddr != 0UL){
 
-      if(ctx->read_access_map.Contain(loadedAddr,sid)){
+      if(ctx->read_access_map.Contain(loadedAddr,sid_)){
         continue;
       }
       atomic_compare_exchange_strong(&addressMap_[index][i],&loadedAddr,0UL,memory_order_acquire);
