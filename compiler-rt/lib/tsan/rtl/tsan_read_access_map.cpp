@@ -98,10 +98,19 @@ void ReadAccessMap::Remove(uptr addr) {
     if (static_cast<uptr>(atomic_load_acquire(&readAccessMap_[index][i].key)) != addr)
       continue;
 
-    for (int j = 0; j < kReadAccessMapThreadCellSize; j++) {
+    atomic_store_release(&readAccessMap_[index][i].val[kReadAccessMapThreadCellSize-1],1ULL<<63);
+
+    atomic_thread_fence(memory_order_release);
+
+    for (int j = 0; j < kReadAccessMapThreadCellSize-1; j++) {
       atomic_store_relaxed(&readAccessMap_[index][i].val[j], 0ULL);
     }
-    atomic_store_release(&readAccessMap_[index][i].key, 0UL);
+
+
+    atomic_store_relaxed(&readAccessMap_[index][i].key, 0UL);
+
+
+    atomic_store_release(&readAccessMap_[index][i].val[kReadAccessMapThreadCellSize-1],0ULL);
   }
 }
 
