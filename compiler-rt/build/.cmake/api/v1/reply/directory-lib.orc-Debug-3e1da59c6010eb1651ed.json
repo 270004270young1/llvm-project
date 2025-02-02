@@ -1,0 +1,53 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install",
+			"add_compiler_rt_runtime"
+		],
+		"files" : 
+		[
+			"cmake/Modules/AddCompilerRT.cmake",
+			"lib/orc/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 140,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 364,
+				"parent" : 1
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 2,
+			"component" : "orc_rt-x86_64",
+			"destination" : "lib/linux",
+			"paths" : 
+			[
+				"lib/linux/liborc_rt-x86_64.a"
+			],
+			"targetId" : "orc_rt-x86_64::@99ae2e081afe23c9a2a8",
+			"targetIndex" : 344,
+			"type" : "target"
+		}
+	],
+	"paths" : 
+	{
+		"build" : "lib/orc",
+		"source" : "lib/orc"
+	}
+}

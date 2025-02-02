@@ -1,0 +1,149 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install",
+			"add_compiler_rt_runtime"
+		],
+		"files" : 
+		[
+			"cmake/Modules/AddCompilerRT.cmake",
+			"lib/xray/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 381,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 364,
+				"parent" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 391,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 364,
+				"parent" : 3
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 401,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 364,
+				"parent" : 5
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 411,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 364,
+				"parent" : 7
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 430,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 364,
+				"parent" : 9
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 2,
+			"component" : "clang_rt.xray-x86_64",
+			"destination" : "lib/linux",
+			"paths" : 
+			[
+				"lib/linux/libclang_rt.xray-x86_64.a"
+			],
+			"targetId" : "clang_rt.xray-x86_64::@954b385044cd174211f7",
+			"targetIndex" : 148,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 4,
+			"component" : "clang_rt.xray-fdr-x86_64",
+			"destination" : "lib/linux",
+			"paths" : 
+			[
+				"lib/linux/libclang_rt.xray-fdr-x86_64.a"
+			],
+			"targetId" : "clang_rt.xray-fdr-x86_64::@954b385044cd174211f7",
+			"targetIndex" : 146,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 6,
+			"component" : "clang_rt.xray-basic-x86_64",
+			"destination" : "lib/linux",
+			"paths" : 
+			[
+				"lib/linux/libclang_rt.xray-basic-x86_64.a"
+			],
+			"targetId" : "clang_rt.xray-basic-x86_64::@954b385044cd174211f7",
+			"targetIndex" : 144,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 8,
+			"component" : "clang_rt.xray-profiling-x86_64",
+			"destination" : "lib/linux",
+			"paths" : 
+			[
+				"lib/linux/libclang_rt.xray-profiling-x86_64.a"
+			],
+			"targetId" : "clang_rt.xray-profiling-x86_64::@954b385044cd174211f7",
+			"targetIndex" : 147,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 10,
+			"component" : "clang_rt.xray-dso-x86_64",
+			"destination" : "lib/linux",
+			"paths" : 
+			[
+				"lib/linux/libclang_rt.xray-dso-x86_64.a"
+			],
+			"targetId" : "clang_rt.xray-dso-x86_64::@954b385044cd174211f7",
+			"targetIndex" : 145,
+			"type" : "target"
+		}
+	],
+	"paths" : 
+	{
+		"build" : "lib/xray",
+		"source" : "lib/xray"
+	}
+}

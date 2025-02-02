@@ -1,0 +1,81 @@
+{
+	"backtrace" : 2,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_custom_target",
+			"add_compiler_rt_script"
+		],
+		"files" : 
+		[
+			"cmake/Modules/AddCompilerRT.cmake",
+			"lib/hwasan/scripts/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 1,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 579,
+				"parent" : 1
+			}
+		]
+	},
+	"id" : "hwasan_symbolize::@a1bc72816d7faef6bc0e",
+	"name" : "hwasan_symbolize",
+	"paths" : 
+	{
+		"build" : "lib/hwasan/scripts",
+		"source" : "lib/hwasan/scripts"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		},
+		{
+			"name" : "CMake Rules",
+			"sourceIndexes" : 
+			[
+				1,
+				2
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 2,
+			"isGenerated" : true,
+			"path" : "build/lib/hwasan/scripts/CMakeFiles/hwasan_symbolize",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "build/lib/hwasan/scripts/CMakeFiles/hwasan_symbolize.rule",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "build/bin/hwasan_symbolize.rule",
+			"sourceGroupIndex" : 1
+		}
+	],
+	"type" : "UTILITY"
+}

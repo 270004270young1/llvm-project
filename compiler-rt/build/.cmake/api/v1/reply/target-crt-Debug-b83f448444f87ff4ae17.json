@@ -1,0 +1,84 @@
+{
+	"backtrace" : 2,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_custom_target",
+			"add_compiler_rt_component",
+			"add_dependencies",
+			"add_compiler_rt_runtime"
+		],
+		"files" : 
+		[
+			"cmake/Modules/AddCompilerRT.cmake",
+			"lib/builtins/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 974,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 112,
+				"parent" : 1
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 992,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 446,
+				"parent" : 3
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 998,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 446,
+				"parent" : 5
+			}
+		]
+	},
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 4,
+			"id" : "clang_rt.crtbegin-x86_64::@45bfbb4ef90931961baa"
+		},
+		{
+			"backtrace" : 6,
+			"id" : "clang_rt.crtend-x86_64::@45bfbb4ef90931961baa"
+		}
+	],
+	"folder" : 
+	{
+		"name" : "Compiler-RT/Components"
+	},
+	"id" : "crt::@45bfbb4ef90931961baa",
+	"name" : "crt",
+	"paths" : 
+	{
+		"build" : "lib/builtins",
+		"source" : "lib/builtins"
+	},
+	"sources" : [],
+	"type" : "UTILITY"
+}

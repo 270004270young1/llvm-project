@@ -1,0 +1,136 @@
+{
+	"backtrace" : 2,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_custom_target",
+			"add_compiler_rt_component",
+			"add_dependencies",
+			"add_compiler_rt_runtime"
+		],
+		"files" : 
+		[
+			"cmake/Modules/AddCompilerRT.cmake",
+			"lib/memprof/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 120,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 112,
+				"parent" : 1
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 134,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 446,
+				"parent" : 3
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 144,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 446,
+				"parent" : 5
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 152,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 446,
+				"parent" : 7
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 177,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 446,
+				"parent" : 9
+			},
+			{
+				"command" : 2,
+				"file" : 1,
+				"line" : 199,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 1,
+				"line" : 203,
+				"parent" : 0
+			}
+		]
+	},
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 4,
+			"id" : "clang_rt.memprof-x86_64::@e3b055d5ce0fd23ae5cb"
+		},
+		{
+			"backtrace" : 6,
+			"id" : "clang_rt.memprof_cxx-x86_64::@e3b055d5ce0fd23ae5cb"
+		},
+		{
+			"backtrace" : 8,
+			"id" : "clang_rt.memprof-preinit-x86_64::@e3b055d5ce0fd23ae5cb"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "clang_rt.memprof-dynamic-x86_64::@e3b055d5ce0fd23ae5cb"
+		},
+		{
+			"backtrace" : 11,
+			"id" : "clang_rt.memprof_cxx-x86_64-symbols::@e3b055d5ce0fd23ae5cb"
+		},
+		{
+			"backtrace" : 12,
+			"id" : "clang_rt.memprof-x86_64-symbols::@e3b055d5ce0fd23ae5cb"
+		}
+	],
+	"folder" : 
+	{
+		"name" : "Compiler-RT/Components"
+	},
+	"id" : "memprof::@e3b055d5ce0fd23ae5cb",
+	"name" : "memprof",
+	"paths" : 
+	{
+		"build" : "lib/memprof",
+		"source" : "lib/memprof"
+	},
+	"sources" : [],
+	"type" : "UTILITY"
+}

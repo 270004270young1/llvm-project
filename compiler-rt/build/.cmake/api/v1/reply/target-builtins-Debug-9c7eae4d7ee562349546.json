@@ -1,0 +1,61 @@
+{
+	"backtrace" : 1,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_custom_target",
+			"add_dependencies",
+			"add_compiler_rt_runtime"
+		],
+		"files" : 
+		[
+			"lib/builtins/CMakeLists.txt",
+			"cmake/Modules/AddCompilerRT.cmake"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 786,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 913,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 446,
+				"parent" : 2
+			}
+		]
+	},
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 3,
+			"id" : "clang_rt.builtins-x86_64::@45bfbb4ef90931961baa"
+		}
+	],
+	"folder" : 
+	{
+		"name" : "Compiler-RT/Metatargets"
+	},
+	"id" : "builtins::@45bfbb4ef90931961baa",
+	"name" : "builtins",
+	"paths" : 
+	{
+		"build" : "lib/builtins",
+		"source" : "lib/builtins"
+	},
+	"sources" : [],
+	"type" : "UTILITY"
+}

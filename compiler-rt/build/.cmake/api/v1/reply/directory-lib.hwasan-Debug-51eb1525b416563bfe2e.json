@@ -1,0 +1,323 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install",
+			"add_compiler_rt_runtime",
+			"add_hwasan_runtimes",
+			"add_sanitizer_rt_symbols",
+			"add_compiler_rt_resource_file"
+		],
+		"files" : 
+		[
+			"cmake/Modules/AddCompilerRT.cmake",
+			"lib/hwasan/CMakeLists.txt",
+			"cmake/Modules/SanitizerUtils.cmake"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 2,
+				"file" : 1,
+				"line" : 249,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 172,
+				"parent" : 1
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 364,
+				"parent" : 2
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 187,
+				"parent" : 1
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 364,
+				"parent" : 4
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 209,
+				"parent" : 1
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 364,
+				"parent" : 6
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 237,
+				"parent" : 1
+			},
+			{
+				"command" : 0,
+				"file" : 2,
+				"line" : 46,
+				"parent" : 8
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 240,
+				"parent" : 1
+			},
+			{
+				"command" : 0,
+				"file" : 2,
+				"line" : 46,
+				"parent" : 10
+			},
+			{
+				"command" : 2,
+				"file" : 1,
+				"line" : 251,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 172,
+				"parent" : 12
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 364,
+				"parent" : 13
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 187,
+				"parent" : 12
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 364,
+				"parent" : 15
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 209,
+				"parent" : 12
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 364,
+				"parent" : 17
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 237,
+				"parent" : 12
+			},
+			{
+				"command" : 0,
+				"file" : 2,
+				"line" : 46,
+				"parent" : 19
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 240,
+				"parent" : 12
+			},
+			{
+				"command" : 0,
+				"file" : 2,
+				"line" : 46,
+				"parent" : 21
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 255,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 364,
+				"parent" : 23
+			},
+			{
+				"command" : 4,
+				"file" : 1,
+				"line" : 262,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 564,
+				"parent" : 25
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 3,
+			"component" : "clang_rt.hwasan-x86_64",
+			"destination" : "lib/linux",
+			"paths" : 
+			[
+				"lib/linux/libclang_rt.hwasan-x86_64.a"
+			],
+			"targetId" : "clang_rt.hwasan-x86_64::@514f2a244b32f410d42f",
+			"targetIndex" : 96,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 5,
+			"component" : "clang_rt.hwasan_cxx-x86_64",
+			"destination" : "lib/linux",
+			"paths" : 
+			[
+				"lib/linux/libclang_rt.hwasan_cxx-x86_64.a"
+			],
+			"targetId" : "clang_rt.hwasan_cxx-x86_64::@514f2a244b32f410d42f",
+			"targetIndex" : 104,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 7,
+			"component" : "clang_rt.hwasan-dynamic-x86_64",
+			"destination" : "lib/linux",
+			"paths" : 
+			[
+				"lib/linux/libclang_rt.hwasan-x86_64.so"
+			],
+			"targetId" : "clang_rt.hwasan-dynamic-x86_64::@514f2a244b32f410d42f",
+			"targetIndex" : 93,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 9,
+			"component" : "Unspecified",
+			"destination" : "lib/linux",
+			"paths" : 
+			[
+				"build/lib/linux/libclang_rt.hwasan-x86_64.a.syms"
+			],
+			"type" : "file"
+		},
+		{
+			"backtrace" : 11,
+			"component" : "Unspecified",
+			"destination" : "lib/linux",
+			"paths" : 
+			[
+				"build/lib/linux/libclang_rt.hwasan_cxx-x86_64.a.syms"
+			],
+			"type" : "file"
+		},
+		{
+			"backtrace" : 14,
+			"component" : "clang_rt.hwasan_aliases-x86_64",
+			"destination" : "lib/linux",
+			"paths" : 
+			[
+				"lib/linux/libclang_rt.hwasan_aliases-x86_64.a"
+			],
+			"targetId" : "clang_rt.hwasan_aliases-x86_64::@514f2a244b32f410d42f",
+			"targetIndex" : 100,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 16,
+			"component" : "clang_rt.hwasan_aliases_cxx-x86_64",
+			"destination" : "lib/linux",
+			"paths" : 
+			[
+				"lib/linux/libclang_rt.hwasan_aliases_cxx-x86_64.a"
+			],
+			"targetId" : "clang_rt.hwasan_aliases_cxx-x86_64::@514f2a244b32f410d42f",
+			"targetIndex" : 102,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 18,
+			"component" : "clang_rt.hwasan_aliases-dynamic-x86_64",
+			"destination" : "lib/linux",
+			"paths" : 
+			[
+				"lib/linux/libclang_rt.hwasan_aliases-x86_64.so"
+			],
+			"targetId" : "clang_rt.hwasan_aliases-dynamic-x86_64::@514f2a244b32f410d42f",
+			"targetIndex" : 98,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 20,
+			"component" : "Unspecified",
+			"destination" : "lib/linux",
+			"paths" : 
+			[
+				"build/lib/linux/libclang_rt.hwasan_aliases-x86_64.a.syms"
+			],
+			"type" : "file"
+		},
+		{
+			"backtrace" : 22,
+			"component" : "Unspecified",
+			"destination" : "lib/linux",
+			"paths" : 
+			[
+				"build/lib/linux/libclang_rt.hwasan_aliases_cxx-x86_64.a.syms"
+			],
+			"type" : "file"
+		},
+		{
+			"backtrace" : 24,
+			"component" : "clang_rt.hwasan-preinit-x86_64",
+			"destination" : "lib/linux",
+			"paths" : 
+			[
+				"lib/linux/libclang_rt.hwasan-preinit-x86_64.a"
+			],
+			"targetId" : "clang_rt.hwasan-preinit-x86_64::@514f2a244b32f410d42f",
+			"targetIndex" : 95,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 26,
+			"component" : "hwasan",
+			"destination" : "share",
+			"paths" : 
+			[
+				"lib/hwasan/hwasan_ignorelist.txt"
+			],
+			"type" : "file"
+		}
+	],
+	"paths" : 
+	{
+		"build" : "lib/hwasan",
+		"source" : "lib/hwasan"
+	}
+}

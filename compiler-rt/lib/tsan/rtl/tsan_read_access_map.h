@@ -5,37 +5,39 @@
 namespace __tsan {
 
 template <typename Key, typename Val>
-struct KeyValPair{
-    Key key;
-    Val val;
+struct KeyValPair {
+  Key key;
+  Val val;
 };
 
-typedef KeyValPair<atomic_uintptr_t,atomic_uint64_t[kReadAccessMapThreadCellSize]> Pair;
+typedef KeyValPair<atomic_uintptr_t, atomic_uint64_t> Pair;
 
-class ReadAccessMap{
+class ReadAccessMap {
+ public:
+  ReadAccessMap();
 
-    public:
-        ReadAccessMap();
+  bool Insert(uptr addr, Sid sid);
+  void Remove(uptr addr);
+  bool Contain(uptr addr, Sid sid);
+  u64 Get(uptr addr);
 
-        bool Add(uptr addr, Sid sid);
-        void Remove(uptr addr);
-        bool Contain(uptr addr, Sid sid);
-        bool Get(uptr addr, ThreadState* thr, Sid* sids);
+  ReadAccessMap(const ReadAccessMap&) = delete;
+  ReadAccessMap(ReadAccessMap&&) = delete;
+  ReadAccessMap& operator=(const ReadAccessMap&) = delete;
+  ReadAccessMap& operator=(ReadAccessMap&&) = delete;
 
-        ReadAccessMap(const ReadAccessMap&) = delete;
-        ReadAccessMap(ReadAccessMap&&) = delete;
-        ReadAccessMap& operator=(const ReadAccessMap&) = delete;
-        ReadAccessMap& operator=(ReadAccessMap&&) = delete;
+ private:
+  Pair* ReadAccessMap::FindMatchedPair(int index, uptr addr, u8 swapIndex);
+//   Pair* ReadAccessMap::GetEmptyPair(int index, uptr addr);
+  bool UpdateCell(Pair* pair, u64 cell, Sid sid);
 
-    private:
-        Pair* ReadAccessMap::FindMatchedPair(int index, uptr addr);
-        Pair* ReadAccessMap::GetEmptyPair(int index, uptr addr);
+  static const u64 DELETE_STATE = (1ULL << 63) - 1ULL | (1ULL << 63);
+  static const u64 EMPTY_STATE = ((1ULL << 63) - 1ULL);
 
-        KeyValPair<atomic_uintptr_t,atomic_uint64_t[kReadAccessMapThreadCellSize]> readAccessMap_[kReadAccessMapSize][kShadowCnt];
+  Pair readAccessMap_[kReadAccessMapSize][2][kShadowCnt];
+  atomic_uint8_t gcTracker_[kReadAccessMapSize];
 };
 
-
-} // namespace __tsan
-
+}  // namespace __tsan
 
 #endif

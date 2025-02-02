@@ -1,0 +1,192 @@
+{
+	"artifacts" : 
+	[
+		{
+			"path" : "lib/linux/libclang_rt.ubsan_minimal-x86_64.so"
+		}
+	],
+	"backtrace" : 2,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_library",
+			"add_compiler_rt_runtime",
+			"install",
+			"set_property",
+			"set_target_link_flags",
+			"target_link_libraries",
+			"set_target_compile_flags",
+			"include_directories"
+		],
+		"files" : 
+		[
+			"cmake/Modules/AddCompilerRT.cmake",
+			"lib/ubsan_minimal/CMakeLists.txt",
+			"cmake/Modules/CompilerRTUtils.cmake"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 36,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 358,
+				"parent" : 1
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 364,
+				"parent" : 1
+			},
+			{
+				"command" : 4,
+				"file" : 0,
+				"line" : 360,
+				"parent" : 1
+			},
+			{
+				"command" : 3,
+				"file" : 2,
+				"line" : 12,
+				"parent" : 4
+			},
+			{
+				"command" : 5,
+				"file" : 0,
+				"line" : 379,
+				"parent" : 1
+			},
+			{
+				"command" : 6,
+				"file" : 0,
+				"line" : 359,
+				"parent" : 1
+			},
+			{
+				"command" : 3,
+				"file" : 2,
+				"line" : 8,
+				"parent" : 7
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 361,
+				"parent" : 1
+			},
+			{
+				"command" : 7,
+				"file" : 1,
+				"line" : 7,
+				"parent" : 0
+			}
+		]
+	},
+	"dependencies" : 
+	[
+		{
+			"id" : "RTUbsan_minimal.x86_64::@e1d192106379f23ea957"
+		}
+	],
+	"folder" : 
+	{
+		"name" : "Compiler-RT/Runtimes"
+	},
+	"id" : "clang_rt.ubsan_minimal-dynamic-x86_64::@e1d192106379f23ea957",
+	"install" : 
+	{
+		"destinations" : 
+		[
+			{
+				"backtrace" : 3,
+				"path" : "lib/linux"
+			},
+			{
+				"backtrace" : 3,
+				"path" : "lib/linux"
+			}
+		],
+		"prefix" : 
+		{
+			"path" : "/usr/local"
+		}
+	},
+	"link" : 
+	{
+		"commandFragments" : 
+		[
+			{
+				"fragment" : "",
+				"role" : "flags"
+			},
+			{
+				"backtrace" : 5,
+				"fragment" : "-m64",
+				"role" : "flags"
+			},
+			{
+				"backtrace" : 5,
+				"fragment" : "-nodefaultlibs",
+				"role" : "flags"
+			},
+			{
+				"backtrace" : 5,
+				"fragment" : "-Wl,-z,text",
+				"role" : "flags"
+			},
+			{
+				"backtrace" : 5,
+				"fragment" : "-nostdlib++",
+				"role" : "flags"
+			},
+			{
+				"backtrace" : 6,
+				"fragment" : "-lgcc_s",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 6,
+				"fragment" : "-lc",
+				"role" : "libraries"
+			}
+		],
+		"language" : "CXX"
+	},
+	"name" : "clang_rt.ubsan_minimal-dynamic-x86_64",
+	"nameOnDisk" : "libclang_rt.ubsan_minimal-x86_64.so",
+	"paths" : 
+	{
+		"build" : "lib/ubsan_minimal",
+		"source" : "lib/ubsan_minimal"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "Object Libraries",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 2,
+			"isGenerated" : true,
+			"path" : "build/lib/ubsan_minimal/CMakeFiles/RTUbsan_minimal.x86_64.dir/ubsan_minimal_handlers.cpp.o",
+			"sourceGroupIndex" : 0
+		}
+	],
+	"type" : "SHARED_LIBRARY"
+}

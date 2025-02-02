@@ -1,0 +1,84 @@
+{
+	"backtrace" : 2,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_custom_target",
+			"add_compiler_rt_component",
+			"add_dependencies",
+			"add_compiler_rt_runtime"
+		],
+		"files" : 
+		[
+			"cmake/Modules/AddCompilerRT.cmake",
+			"lib/nsan/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 1,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 112,
+				"parent" : 1
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 83,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 446,
+				"parent" : 3
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 113,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 446,
+				"parent" : 5
+			}
+		]
+	},
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 4,
+			"id" : "clang_rt.nsan-x86_64::@7edf5c9e82eb1e63b813"
+		},
+		{
+			"backtrace" : 6,
+			"id" : "clang_rt.nsan-dynamic-x86_64::@7edf5c9e82eb1e63b813"
+		}
+	],
+	"folder" : 
+	{
+		"name" : "Compiler-RT/Components"
+	},
+	"id" : "nsan::@7edf5c9e82eb1e63b813",
+	"name" : "nsan",
+	"paths" : 
+	{
+		"build" : "lib/nsan",
+		"source" : "lib/nsan"
+	},
+	"sources" : [],
+	"type" : "UTILITY"
+}

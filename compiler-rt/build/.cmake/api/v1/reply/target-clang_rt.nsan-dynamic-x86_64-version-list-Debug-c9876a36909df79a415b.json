@@ -1,0 +1,95 @@
+{
+	"backtrace" : 2,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_custom_target",
+			"add_sanitizer_rt_version_list",
+			"add_custom_command"
+		],
+		"files" : 
+		[
+			"cmake/Modules/SanitizerUtils.cmake",
+			"lib/nsan/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 95,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 92,
+				"parent" : 1
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 83,
+				"parent" : 1
+			}
+		]
+	},
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 3,
+			"id" : "clang_rt.nsan-x86_64::@7edf5c9e82eb1e63b813"
+		}
+	],
+	"id" : "clang_rt.nsan-dynamic-x86_64-version-list::@7edf5c9e82eb1e63b813",
+	"name" : "clang_rt.nsan-dynamic-x86_64-version-list",
+	"paths" : 
+	{
+		"build" : "lib/nsan",
+		"source" : "lib/nsan"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		},
+		{
+			"name" : "CMake Rules",
+			"sourceIndexes" : 
+			[
+				1,
+				2
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 2,
+			"isGenerated" : true,
+			"path" : "build/lib/nsan/CMakeFiles/clang_rt.nsan-dynamic-x86_64-version-list",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "build/lib/nsan/CMakeFiles/clang_rt.nsan-dynamic-x86_64-version-list.rule",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "build/lib/nsan/clang_rt.nsan-dynamic-x86_64.vers.rule",
+			"sourceGroupIndex" : 1
+		}
+	],
+	"type" : "UTILITY"
+}

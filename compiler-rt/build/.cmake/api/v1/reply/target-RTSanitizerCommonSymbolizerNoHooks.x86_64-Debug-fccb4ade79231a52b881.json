@@ -1,0 +1,440 @@
+{
+	"artifacts" : 
+	[
+		{
+			"path" : "lib/sanitizer_common/CMakeFiles/RTSanitizerCommonSymbolizerNoHooks.x86_64.dir/./sanitizer_allocator_report.cpp.o"
+		},
+		{
+			"path" : "lib/sanitizer_common/CMakeFiles/RTSanitizerCommonSymbolizerNoHooks.x86_64.dir/./sanitizer_chained_origin_depot.cpp.o"
+		},
+		{
+			"path" : "lib/sanitizer_common/CMakeFiles/RTSanitizerCommonSymbolizerNoHooks.x86_64.dir/./sanitizer_stack_store.cpp.o"
+		},
+		{
+			"path" : "lib/sanitizer_common/CMakeFiles/RTSanitizerCommonSymbolizerNoHooks.x86_64.dir/./sanitizer_stackdepot.cpp.o"
+		},
+		{
+			"path" : "lib/sanitizer_common/CMakeFiles/RTSanitizerCommonSymbolizerNoHooks.x86_64.dir/./sanitizer_stacktrace.cpp.o"
+		},
+		{
+			"path" : "lib/sanitizer_common/CMakeFiles/RTSanitizerCommonSymbolizerNoHooks.x86_64.dir/./sanitizer_stacktrace_libcdep.cpp.o"
+		},
+		{
+			"path" : "lib/sanitizer_common/CMakeFiles/RTSanitizerCommonSymbolizerNoHooks.x86_64.dir/./sanitizer_stacktrace_printer.cpp.o"
+		},
+		{
+			"path" : "lib/sanitizer_common/CMakeFiles/RTSanitizerCommonSymbolizerNoHooks.x86_64.dir/./sanitizer_stacktrace_sparc.cpp.o"
+		},
+		{
+			"path" : "lib/sanitizer_common/CMakeFiles/RTSanitizerCommonSymbolizerNoHooks.x86_64.dir/./sanitizer_symbolizer.cpp.o"
+		},
+		{
+			"path" : "lib/sanitizer_common/CMakeFiles/RTSanitizerCommonSymbolizerNoHooks.x86_64.dir/./sanitizer_symbolizer_libbacktrace.cpp.o"
+		},
+		{
+			"path" : "lib/sanitizer_common/CMakeFiles/RTSanitizerCommonSymbolizerNoHooks.x86_64.dir/./sanitizer_symbolizer_libcdep.cpp.o"
+		},
+		{
+			"path" : "lib/sanitizer_common/CMakeFiles/RTSanitizerCommonSymbolizerNoHooks.x86_64.dir/./sanitizer_symbolizer_mac.cpp.o"
+		},
+		{
+			"path" : "lib/sanitizer_common/CMakeFiles/RTSanitizerCommonSymbolizerNoHooks.x86_64.dir/./sanitizer_symbolizer_markup.cpp.o"
+		},
+		{
+			"path" : "lib/sanitizer_common/CMakeFiles/RTSanitizerCommonSymbolizerNoHooks.x86_64.dir/./sanitizer_symbolizer_markup_fuchsia.cpp.o"
+		},
+		{
+			"path" : "lib/sanitizer_common/CMakeFiles/RTSanitizerCommonSymbolizerNoHooks.x86_64.dir/./sanitizer_symbolizer_posix_libcdep.cpp.o"
+		},
+		{
+			"path" : "lib/sanitizer_common/CMakeFiles/RTSanitizerCommonSymbolizerNoHooks.x86_64.dir/./sanitizer_symbolizer_report.cpp.o"
+		},
+		{
+			"path" : "lib/sanitizer_common/CMakeFiles/RTSanitizerCommonSymbolizerNoHooks.x86_64.dir/./sanitizer_symbolizer_report_fuchsia.cpp.o"
+		},
+		{
+			"path" : "lib/sanitizer_common/CMakeFiles/RTSanitizerCommonSymbolizerNoHooks.x86_64.dir/./sanitizer_symbolizer_win.cpp.o"
+		},
+		{
+			"path" : "lib/sanitizer_common/CMakeFiles/RTSanitizerCommonSymbolizerNoHooks.x86_64.dir/./sanitizer_thread_history.cpp.o"
+		},
+		{
+			"path" : "lib/sanitizer_common/CMakeFiles/RTSanitizerCommonSymbolizerNoHooks.x86_64.dir/./sanitizer_unwind_linux_libcdep.cpp.o"
+		},
+		{
+			"path" : "lib/sanitizer_common/CMakeFiles/RTSanitizerCommonSymbolizerNoHooks.x86_64.dir/./sanitizer_unwind_fuchsia.cpp.o"
+		},
+		{
+			"path" : "lib/sanitizer_common/CMakeFiles/RTSanitizerCommonSymbolizerNoHooks.x86_64.dir/./sanitizer_unwind_win.cpp.o"
+		}
+	],
+	"backtrace" : 2,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_library",
+			"add_compiler_rt_object_libraries",
+			"set_property",
+			"set_target_compile_flags",
+			"include_directories"
+		],
+		"files" : 
+		[
+			"cmake/Modules/AddCompilerRT.cmake",
+			"lib/sanitizer_common/CMakeLists.txt",
+			"cmake/Modules/CompilerRTUtils.cmake"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 305,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 69,
+				"parent" : 1
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 90,
+				"parent" : 1
+			},
+			{
+				"command" : 2,
+				"file" : 2,
+				"line" : 8,
+				"parent" : 3
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 92,
+				"parent" : 1
+			},
+			{
+				"command" : 4,
+				"file" : 1,
+				"line" : 223,
+				"parent" : 0
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : " -Wall -Wno-unused-parameter -g -std=c++17"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-m64"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-fPIC"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-fno-builtin"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-fno-exceptions"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-fomit-frame-pointer"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-funwind-tables"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-fno-stack-protector"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-fvisibility=hidden"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-fno-lto"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-O3"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-g"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-Wno-variadic-macros"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-ftrivial-auto-var-init=pattern"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-nostdinc++"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-Wno-format"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-fno-rtti"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-Wframe-larger-than=570"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-DSANITIZER_SUPPORTS_WEAK_HOOKS=0"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"backtrace" : 5,
+					"define" : "HAVE_RPC_XDR_H=0"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 6,
+					"path" : "/home/youngminghei/Documents/Fyp/llvm/llvm-project/compiler-rt/lib/sanitizer_common/.."
+				}
+			],
+			"language" : "CXX",
+			"languageStandard" : 
+			{
+				"backtraces" : 
+				[
+					2
+				],
+				"standard" : "17"
+			},
+			"sourceIndexes" : 
+			[
+				0,
+				1,
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
+				8,
+				9,
+				10,
+				11,
+				12,
+				13,
+				14,
+				15,
+				16,
+				17,
+				18,
+				19,
+				20,
+				21
+			]
+		}
+	],
+	"folder" : 
+	{
+		"name" : "Compiler-RT/Libraries"
+	},
+	"id" : "RTSanitizerCommonSymbolizerNoHooks.x86_64::@a37263b2aa050e3263d2",
+	"name" : "RTSanitizerCommonSymbolizerNoHooks.x86_64",
+	"paths" : 
+	{
+		"build" : "lib/sanitizer_common",
+		"source" : "lib/sanitizer_common"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "Source Files",
+			"sourceIndexes" : 
+			[
+				0,
+				1,
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
+				8,
+				9,
+				10,
+				11,
+				12,
+				13,
+				14,
+				15,
+				16,
+				17,
+				18,
+				19,
+				20,
+				21
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/sanitizer_common/sanitizer_allocator_report.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/sanitizer_common/sanitizer_chained_origin_depot.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/sanitizer_common/sanitizer_stack_store.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/sanitizer_common/sanitizer_stackdepot.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/sanitizer_common/sanitizer_stacktrace.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/sanitizer_common/sanitizer_stacktrace_libcdep.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/sanitizer_common/sanitizer_stacktrace_printer.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/sanitizer_common/sanitizer_stacktrace_sparc.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/sanitizer_common/sanitizer_symbolizer.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/sanitizer_common/sanitizer_symbolizer_libbacktrace.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/sanitizer_common/sanitizer_symbolizer_libcdep.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/sanitizer_common/sanitizer_symbolizer_mac.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/sanitizer_common/sanitizer_symbolizer_markup.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/sanitizer_common/sanitizer_symbolizer_markup_fuchsia.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/sanitizer_common/sanitizer_symbolizer_posix_libcdep.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/sanitizer_common/sanitizer_symbolizer_report.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/sanitizer_common/sanitizer_symbolizer_report_fuchsia.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/sanitizer_common/sanitizer_symbolizer_win.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/sanitizer_common/sanitizer_thread_history.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/sanitizer_common/sanitizer_unwind_linux_libcdep.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/sanitizer_common/sanitizer_unwind_fuchsia.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "lib/sanitizer_common/sanitizer_unwind_win.cpp",
+			"sourceGroupIndex" : 0
+		}
+	],
+	"type" : "OBJECT_LIBRARY"
+}

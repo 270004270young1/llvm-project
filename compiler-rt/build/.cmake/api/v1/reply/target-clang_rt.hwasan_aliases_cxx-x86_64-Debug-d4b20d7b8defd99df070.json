@@ -1,0 +1,129 @@
+{
+	"archive" : {},
+	"artifacts" : 
+	[
+		{
+			"path" : "lib/linux/libclang_rt.hwasan_aliases_cxx-x86_64.a"
+		}
+	],
+	"backtrace" : 3,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_library",
+			"add_compiler_rt_runtime",
+			"add_hwasan_runtimes",
+			"install",
+			"set_property",
+			"set_target_compile_flags",
+			"include_directories"
+		],
+		"files" : 
+		[
+			"cmake/Modules/AddCompilerRT.cmake",
+			"lib/hwasan/CMakeLists.txt",
+			"cmake/Modules/CompilerRTUtils.cmake"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 2,
+				"file" : 1,
+				"line" : 251,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 187,
+				"parent" : 1
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 358,
+				"parent" : 2
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 364,
+				"parent" : 2
+			},
+			{
+				"command" : 5,
+				"file" : 0,
+				"line" : 359,
+				"parent" : 2
+			},
+			{
+				"command" : 4,
+				"file" : 2,
+				"line" : 8,
+				"parent" : 5
+			},
+			{
+				"command" : 6,
+				"file" : 1,
+				"line" : 1,
+				"parent" : 0
+			}
+		]
+	},
+	"dependencies" : 
+	[
+		{
+			"id" : "RTHwasan_cxx.x86_64::@514f2a244b32f410d42f"
+		}
+	],
+	"folder" : 
+	{
+		"name" : "Compiler-RT/Runtimes"
+	},
+	"id" : "clang_rt.hwasan_aliases_cxx-x86_64::@514f2a244b32f410d42f",
+	"install" : 
+	{
+		"destinations" : 
+		[
+			{
+				"backtrace" : 4,
+				"path" : "lib/linux"
+			}
+		],
+		"prefix" : 
+		{
+			"path" : "/usr/local"
+		}
+	},
+	"name" : "clang_rt.hwasan_aliases_cxx-x86_64",
+	"nameOnDisk" : "libclang_rt.hwasan_aliases_cxx-x86_64.a",
+	"paths" : 
+	{
+		"build" : "lib/hwasan",
+		"source" : "lib/hwasan"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "Object Libraries",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 3,
+			"isGenerated" : true,
+			"path" : "build/lib/hwasan/CMakeFiles/RTHwasan_cxx.x86_64.dir/hwasan_new_delete.cpp.o",
+			"sourceGroupIndex" : 0
+		}
+	],
+	"type" : "STATIC_LIBRARY"
+}

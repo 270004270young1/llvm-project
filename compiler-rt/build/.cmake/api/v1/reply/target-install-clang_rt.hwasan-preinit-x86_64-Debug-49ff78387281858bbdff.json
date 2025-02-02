@@ -1,0 +1,88 @@
+{
+	"backtrace" : 3,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_custom_target",
+			"add_compiler_rt_install_targets",
+			"add_compiler_rt_runtime"
+		],
+		"files" : 
+		[
+			"cmake/Modules/CompilerRTUtils.cmake",
+			"cmake/Modules/AddCompilerRT.cmake",
+			"lib/hwasan/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 2
+			},
+			{
+				"command" : 2,
+				"file" : 2,
+				"line" : 255,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 430,
+				"parent" : 1
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 596,
+				"parent" : 2
+			}
+		]
+	},
+	"dependencies" : 
+	[
+		{
+			"id" : "clang_rt.hwasan-preinit-x86_64::@514f2a244b32f410d42f"
+		}
+	],
+	"id" : "install-clang_rt.hwasan-preinit-x86_64::@514f2a244b32f410d42f",
+	"name" : "install-clang_rt.hwasan-preinit-x86_64",
+	"paths" : 
+	{
+		"build" : "lib/hwasan",
+		"source" : "lib/hwasan"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		},
+		{
+			"name" : "CMake Rules",
+			"sourceIndexes" : 
+			[
+				1
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 3,
+			"isGenerated" : true,
+			"path" : "build/lib/hwasan/CMakeFiles/install-clang_rt.hwasan-preinit-x86_64",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "build/lib/hwasan/CMakeFiles/install-clang_rt.hwasan-preinit-x86_64.rule",
+			"sourceGroupIndex" : 1
+		}
+	],
+	"type" : "UTILITY"
+}

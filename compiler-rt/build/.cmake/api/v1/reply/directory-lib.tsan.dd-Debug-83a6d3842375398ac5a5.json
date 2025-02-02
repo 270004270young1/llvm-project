@@ -1,0 +1,77 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install",
+			"add_compiler_rt_runtime"
+		],
+		"files" : 
+		[
+			"cmake/Modules/AddCompilerRT.cmake",
+			"lib/tsan/dd/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 28,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 364,
+				"parent" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 42,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 364,
+				"parent" : 3
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 2,
+			"component" : "clang_rt.dd-x86_64",
+			"destination" : "lib/linux",
+			"paths" : 
+			[
+				"lib/linux/libclang_rt.dd-x86_64.a"
+			],
+			"targetId" : "clang_rt.dd-x86_64::@404e7748b7de3b98c168",
+			"targetIndex" : 85,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 4,
+			"component" : "clang_rt.dyndd-dynamic-x86_64",
+			"destination" : "lib/linux",
+			"paths" : 
+			[
+				"lib/linux/libclang_rt.dyndd-x86_64.so"
+			],
+			"targetId" : "clang_rt.dyndd-dynamic-x86_64::@404e7748b7de3b98c168",
+			"targetIndex" : 88,
+			"type" : "target"
+		}
+	],
+	"paths" : 
+	{
+		"build" : "lib/tsan/dd",
+		"source" : "lib/tsan/dd"
+	}
+}

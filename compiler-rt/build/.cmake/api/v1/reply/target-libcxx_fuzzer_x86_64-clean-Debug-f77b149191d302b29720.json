@@ -1,0 +1,166 @@
+{
+	"backtrace" : 4,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_custom_target",
+			"_ep_step_add_target",
+			"ExternalProject_Add_StepTargets",
+			"add_custom_libcxx",
+			"add_dependencies",
+			"_ep_step_add_target_dependencies"
+		],
+		"files" : 
+		[
+			"/usr/share/cmake-3.28/Modules/ExternalProject.cmake",
+			"cmake/Modules/AddCompilerRT.cmake",
+			"lib/fuzzer/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 2
+			},
+			{
+				"command" : 3,
+				"file" : 2,
+				"line" : 161,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 1,
+				"line" : 751,
+				"parent" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 2365,
+				"parent" : 2
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 2238,
+				"parent" : 3
+			},
+			{
+				"command" : 4,
+				"file" : 0,
+				"line" : 2272,
+				"parent" : 3
+			},
+			{
+				"command" : 5,
+				"file" : 0,
+				"line" : 2255,
+				"parent" : 3
+			},
+			{
+				"command" : 4,
+				"file" : 0,
+				"line" : 2305,
+				"parent" : 6
+			}
+		]
+	},
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 5,
+			"id" : "libcxx_fuzzer_x86_64-clobber::@fc35b86670fecb6a72e9"
+		},
+		{
+			"backtrace" : 7,
+			"id" : "libcxx_fuzzer_x86_64-configure::@fc35b86670fecb6a72e9"
+		}
+	],
+	"folder" : 
+	{
+		"name" : "ExternalProjectTargets/libcxx_fuzzer_x86_64"
+	},
+	"id" : "libcxx_fuzzer_x86_64-clean::@fc35b86670fecb6a72e9",
+	"name" : "libcxx_fuzzer_x86_64-clean",
+	"paths" : 
+	{
+		"build" : "lib/fuzzer",
+		"source" : "lib/fuzzer"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		},
+		{
+			"name" : "CMake Rules",
+			"sourceIndexes" : 
+			[
+				1,
+				2,
+				3,
+				4,
+				5,
+				6,
+				7
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 4,
+			"isGenerated" : true,
+			"path" : "build/lib/fuzzer/CMakeFiles/libcxx_fuzzer_x86_64-clean",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "build/lib/fuzzer/CMakeFiles/libcxx_fuzzer_x86_64-clean.rule",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "build/lib/fuzzer/libcxx_fuzzer_x86_64/src/libcxx_fuzzer_x86_64-stamp/libcxx_fuzzer_x86_64-clean.rule",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "build/lib/fuzzer/libcxx_fuzzer_x86_64/src/libcxx_fuzzer_x86_64-stamp/libcxx_fuzzer_x86_64-configure.rule",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "build/lib/fuzzer/libcxx_fuzzer_x86_64/src/libcxx_fuzzer_x86_64-stamp/libcxx_fuzzer_x86_64-patch.rule",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "build/lib/fuzzer/libcxx_fuzzer_x86_64/src/libcxx_fuzzer_x86_64-stamp/libcxx_fuzzer_x86_64-update.rule",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "build/lib/fuzzer/libcxx_fuzzer_x86_64/src/libcxx_fuzzer_x86_64-stamp/libcxx_fuzzer_x86_64-download.rule",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "build/lib/fuzzer/libcxx_fuzzer_x86_64/src/libcxx_fuzzer_x86_64-stamp/libcxx_fuzzer_x86_64-mkdir.rule",
+			"sourceGroupIndex" : 1
+		}
+	],
+	"type" : "UTILITY"
+}

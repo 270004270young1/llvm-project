@@ -1,0 +1,77 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install",
+			"add_compiler_rt_runtime"
+		],
+		"files" : 
+		[
+			"cmake/Modules/AddCompilerRT.cmake",
+			"lib/nsan/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 83,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 364,
+				"parent" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 113,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 364,
+				"parent" : 3
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 2,
+			"component" : "clang_rt.nsan-x86_64",
+			"destination" : "lib/linux",
+			"paths" : 
+			[
+				"lib/linux/libclang_rt.nsan-x86_64.a"
+			],
+			"targetId" : "clang_rt.nsan-x86_64::@7edf5c9e82eb1e63b813",
+			"targetIndex" : 120,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 4,
+			"component" : "clang_rt.nsan-dynamic-x86_64",
+			"destination" : "lib/linux",
+			"paths" : 
+			[
+				"lib/linux/libclang_rt.nsan-x86_64.so"
+			],
+			"targetId" : "clang_rt.nsan-dynamic-x86_64::@7edf5c9e82eb1e63b813",
+			"targetIndex" : 118,
+			"type" : "target"
+		}
+	],
+	"paths" : 
+	{
+		"build" : "lib/nsan",
+		"source" : "lib/nsan"
+	}
+}

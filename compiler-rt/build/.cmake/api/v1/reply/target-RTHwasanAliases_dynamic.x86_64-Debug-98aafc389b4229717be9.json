@@ -1,0 +1,515 @@
+{
+	"artifacts" : 
+	[
+		{
+			"path" : "lib/hwasan/CMakeFiles/RTHwasanAliases_dynamic.x86_64.dir/./hwasan.cpp.o"
+		},
+		{
+			"path" : "lib/hwasan/CMakeFiles/RTHwasanAliases_dynamic.x86_64.dir/./hwasan_allocator.cpp.o"
+		},
+		{
+			"path" : "lib/hwasan/CMakeFiles/RTHwasanAliases_dynamic.x86_64.dir/./hwasan_allocation_functions.cpp.o"
+		},
+		{
+			"path" : "lib/hwasan/CMakeFiles/RTHwasanAliases_dynamic.x86_64.dir/./hwasan_dynamic_shadow.cpp.o"
+		},
+		{
+			"path" : "lib/hwasan/CMakeFiles/RTHwasanAliases_dynamic.x86_64.dir/./hwasan_exceptions.cpp.o"
+		},
+		{
+			"path" : "lib/hwasan/CMakeFiles/RTHwasanAliases_dynamic.x86_64.dir/./hwasan_fuchsia.cpp.o"
+		},
+		{
+			"path" : "lib/hwasan/CMakeFiles/RTHwasanAliases_dynamic.x86_64.dir/./hwasan_globals.cpp.o"
+		},
+		{
+			"path" : "lib/hwasan/CMakeFiles/RTHwasanAliases_dynamic.x86_64.dir/./hwasan_interceptors.cpp.o"
+		},
+		{
+			"path" : "lib/hwasan/CMakeFiles/RTHwasanAliases_dynamic.x86_64.dir/./hwasan_interceptors_vfork.S.o"
+		},
+		{
+			"path" : "lib/hwasan/CMakeFiles/RTHwasanAliases_dynamic.x86_64.dir/./hwasan_linux.cpp.o"
+		},
+		{
+			"path" : "lib/hwasan/CMakeFiles/RTHwasanAliases_dynamic.x86_64.dir/./hwasan_memintrinsics.cpp.o"
+		},
+		{
+			"path" : "lib/hwasan/CMakeFiles/RTHwasanAliases_dynamic.x86_64.dir/./hwasan_poisoning.cpp.o"
+		},
+		{
+			"path" : "lib/hwasan/CMakeFiles/RTHwasanAliases_dynamic.x86_64.dir/./hwasan_report.cpp.o"
+		},
+		{
+			"path" : "lib/hwasan/CMakeFiles/RTHwasanAliases_dynamic.x86_64.dir/./hwasan_thread.cpp.o"
+		},
+		{
+			"path" : "lib/hwasan/CMakeFiles/RTHwasanAliases_dynamic.x86_64.dir/./hwasan_thread_list.cpp.o"
+		},
+		{
+			"path" : "lib/hwasan/CMakeFiles/RTHwasanAliases_dynamic.x86_64.dir/./hwasan_type_test.cpp.o"
+		},
+		{
+			"path" : "lib/hwasan/CMakeFiles/RTHwasanAliases_dynamic.x86_64.dir/./hwasan_setjmp_x86_64.S.o"
+		},
+		{
+			"path" : "lib/hwasan/CMakeFiles/RTHwasanAliases_dynamic.x86_64.dir/./hwasan_new_delete.cpp.o"
+		}
+	],
+	"backtrace" : 3,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_library",
+			"add_compiler_rt_object_libraries",
+			"add_hwasan_runtimes",
+			"set_property",
+			"set_target_compile_flags",
+			"include_directories"
+		],
+		"files" : 
+		[
+			"cmake/Modules/AddCompilerRT.cmake",
+			"lib/hwasan/CMakeLists.txt",
+			"cmake/Modules/CompilerRTUtils.cmake"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 2,
+				"file" : 1,
+				"line" : 251,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 161,
+				"parent" : 1
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 69,
+				"parent" : 2
+			},
+			{
+				"command" : 4,
+				"file" : 0,
+				"line" : 90,
+				"parent" : 2
+			},
+			{
+				"command" : 3,
+				"file" : 2,
+				"line" : 8,
+				"parent" : 4
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 92,
+				"parent" : 2
+			},
+			{
+				"command" : 5,
+				"file" : 1,
+				"line" : 1,
+				"parent" : 0
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : " -Wall -Wno-unused-parameter -g -std=c++17"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-m64"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-fPIC"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-fno-builtin"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-fno-exceptions"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-fomit-frame-pointer"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-funwind-tables"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-fno-stack-protector"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-fvisibility=hidden"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-fno-lto"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-O3"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-g"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-Wno-variadic-macros"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-ftrivial-auto-var-init=pattern"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-nostdinc++"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-fno-rtti"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-ffreestanding"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-Wno-format"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-ftls-model=initial-exec"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-DHWASAN_ALIASING_MODE"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"backtrace" : 6,
+					"define" : "HWASAN_WITH_INTERCEPTORS=1"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 7,
+					"path" : "/home/youngminghei/Documents/Fyp/llvm/llvm-project/compiler-rt/lib/hwasan/.."
+				}
+			],
+			"language" : "CXX",
+			"languageStandard" : 
+			{
+				"backtraces" : 
+				[
+					3
+				],
+				"standard" : "17"
+			},
+			"sourceIndexes" : 
+			[
+				0,
+				1,
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
+				9,
+				10,
+				11,
+				12,
+				13,
+				14,
+				15,
+				17
+			]
+		},
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-g"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-m64"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-fPIC"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-fno-builtin"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-fno-exceptions"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-fomit-frame-pointer"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-funwind-tables"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-fno-stack-protector"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-fvisibility=hidden"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-fno-lto"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-O3"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-g"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-Wno-variadic-macros"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-ftrivial-auto-var-init=pattern"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-nostdinc++"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-fno-rtti"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-ffreestanding"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-Wno-format"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-ftls-model=initial-exec"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-DHWASAN_ALIASING_MODE"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"backtrace" : 6,
+					"define" : "HWASAN_WITH_INTERCEPTORS=1"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 7,
+					"path" : "/home/youngminghei/Documents/Fyp/llvm/llvm-project/compiler-rt/lib/hwasan/.."
+				}
+			],
+			"language" : "ASM",
+			"sourceIndexes" : 
+			[
+				8,
+				16
+			]
+		}
+	],
+	"folder" : 
+	{
+		"name" : "Compiler-RT/Libraries"
+	},
+	"id" : "RTHwasanAliases_dynamic.x86_64::@514f2a244b32f410d42f",
+	"name" : "RTHwasanAliases_dynamic.x86_64",
+	"paths" : 
+	{
+		"build" : "lib/hwasan",
+		"source" : "lib/hwasan"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "Source Files",
+			"sourceIndexes" : 
+			[
+				0,
+				1,
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
+				9,
+				10,
+				11,
+				12,
+				13,
+				14,
+				15,
+				17
+			]
+		},
+		{
+			"name" : "",
+			"sourceIndexes" : 
+			[
+				8,
+				16
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 3,
+			"compileGroupIndex" : 0,
+			"path" : "lib/hwasan/hwasan.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 3,
+			"compileGroupIndex" : 0,
+			"path" : "lib/hwasan/hwasan_allocator.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 3,
+			"compileGroupIndex" : 0,
+			"path" : "lib/hwasan/hwasan_allocation_functions.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 3,
+			"compileGroupIndex" : 0,
+			"path" : "lib/hwasan/hwasan_dynamic_shadow.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 3,
+			"compileGroupIndex" : 0,
+			"path" : "lib/hwasan/hwasan_exceptions.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 3,
+			"compileGroupIndex" : 0,
+			"path" : "lib/hwasan/hwasan_fuchsia.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 3,
+			"compileGroupIndex" : 0,
+			"path" : "lib/hwasan/hwasan_globals.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 3,
+			"compileGroupIndex" : 0,
+			"path" : "lib/hwasan/hwasan_interceptors.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 3,
+			"compileGroupIndex" : 1,
+			"path" : "lib/hwasan/hwasan_interceptors_vfork.S",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 3,
+			"compileGroupIndex" : 0,
+			"path" : "lib/hwasan/hwasan_linux.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 3,
+			"compileGroupIndex" : 0,
+			"path" : "lib/hwasan/hwasan_memintrinsics.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 3,
+			"compileGroupIndex" : 0,
+			"path" : "lib/hwasan/hwasan_poisoning.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 3,
+			"compileGroupIndex" : 0,
+			"path" : "lib/hwasan/hwasan_report.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 3,
+			"compileGroupIndex" : 0,
+			"path" : "lib/hwasan/hwasan_thread.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 3,
+			"compileGroupIndex" : 0,
+			"path" : "lib/hwasan/hwasan_thread_list.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 3,
+			"compileGroupIndex" : 0,
+			"path" : "lib/hwasan/hwasan_type_test.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 3,
+			"compileGroupIndex" : 1,
+			"path" : "lib/hwasan/hwasan_setjmp_x86_64.S",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 3,
+			"compileGroupIndex" : 0,
+			"path" : "lib/hwasan/hwasan_new_delete.cpp",
+			"sourceGroupIndex" : 0
+		}
+	],
+	"type" : "OBJECT_LIBRARY"
+}

@@ -1,0 +1,103 @@
+{
+	"backtrace" : 3,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_custom_target",
+			"add_compiler_rt_install_targets",
+			"add_compiler_rt_runtime",
+			"add_dependencies"
+		],
+		"files" : 
+		[
+			"cmake/Modules/CompilerRTUtils.cmake",
+			"cmake/Modules/AddCompilerRT.cmake",
+			"lib/dfsan/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 2
+			},
+			{
+				"command" : 2,
+				"file" : 2,
+				"line" : 38,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 430,
+				"parent" : 1
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 579,
+				"parent" : 2
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 611,
+				"parent" : 2
+			}
+		]
+	},
+	"dependencies" : 
+	[
+		{
+			"id" : "dfsan::@da21de211065eaf619f5"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "install-clang_rt.dfsan-x86_64-stripped::@da21de211065eaf619f5"
+		}
+	],
+	"folder" : 
+	{
+		"name" : "Compiler-RT/Installation"
+	},
+	"id" : "install-dfsan-stripped::@da21de211065eaf619f5",
+	"name" : "install-dfsan-stripped",
+	"paths" : 
+	{
+		"build" : "lib/dfsan",
+		"source" : "lib/dfsan"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		},
+		{
+			"name" : "CMake Rules",
+			"sourceIndexes" : 
+			[
+				1
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 3,
+			"isGenerated" : true,
+			"path" : "build/lib/dfsan/CMakeFiles/install-dfsan-stripped",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "build/lib/dfsan/CMakeFiles/install-dfsan-stripped.rule",
+			"sourceGroupIndex" : 1
+		}
+	],
+	"type" : "UTILITY"
+}

@@ -1,0 +1,535 @@
+{
+	"backtrace" : 3,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_custom_target",
+			"include",
+			"add_dependencies",
+			"add_compiler_rt_component"
+		],
+		"files" : 
+		[
+			"cmake/base-config-ix.cmake",
+			"CMakeLists.txt",
+			"include/CMakeLists.txt",
+			"lib/builtins/CMakeLists.txt",
+			"cmake/Modules/AddCompilerRT.cmake",
+			"lib/lsan/CMakeLists.txt",
+			"lib/ubsan/CMakeLists.txt",
+			"lib/asan/CMakeLists.txt",
+			"lib/rtsan/CMakeLists.txt",
+			"lib/dfsan/CMakeLists.txt",
+			"lib/msan/CMakeLists.txt",
+			"lib/hwasan/CMakeLists.txt",
+			"lib/tsan/dd/CMakeLists.txt",
+			"lib/tsan/rtl/CMakeLists.txt",
+			"lib/tysan/CMakeLists.txt",
+			"lib/safestack/CMakeLists.txt",
+			"lib/cfi/CMakeLists.txt",
+			"lib/scudo/standalone/CMakeLists.txt",
+			"lib/ubsan_minimal/CMakeLists.txt",
+			"lib/gwp_asan/CMakeLists.txt",
+			"lib/nsan/CMakeLists.txt",
+			"lib/profile/CMakeLists.txt",
+			"lib/ctx_profile/CMakeLists.txt",
+			"lib/xray/CMakeLists.txt",
+			"lib/fuzzer/CMakeLists.txt",
+			"lib/memprof/CMakeLists.txt",
+			"lib/orc/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 42,
+				"parent" : 0
+			},
+			{
+				"file" : 0,
+				"parent" : 1
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 23,
+				"parent" : 2
+			},
+			{
+				"file" : 2
+			},
+			{
+				"command" : 2,
+				"file" : 2,
+				"line" : 82,
+				"parent" : 4
+			},
+			{
+				"file" : 3
+			},
+			{
+				"command" : 2,
+				"file" : 3,
+				"line" : 926,
+				"parent" : 6
+			},
+			{
+				"command" : 3,
+				"file" : 3,
+				"line" : 974,
+				"parent" : 6
+			},
+			{
+				"command" : 2,
+				"file" : 4,
+				"line" : 117,
+				"parent" : 8
+			},
+			{
+				"file" : 5
+			},
+			{
+				"command" : 3,
+				"file" : 5,
+				"line" : 48,
+				"parent" : 10
+			},
+			{
+				"command" : 2,
+				"file" : 4,
+				"line" : 117,
+				"parent" : 11
+			},
+			{
+				"file" : 6
+			},
+			{
+				"command" : 3,
+				"file" : 6,
+				"line" : 76,
+				"parent" : 13
+			},
+			{
+				"command" : 2,
+				"file" : 4,
+				"line" : 117,
+				"parent" : 14
+			},
+			{
+				"file" : 7
+			},
+			{
+				"command" : 3,
+				"file" : 7,
+				"line" : 203,
+				"parent" : 16
+			},
+			{
+				"command" : 2,
+				"file" : 4,
+				"line" : 117,
+				"parent" : 17
+			},
+			{
+				"file" : 8
+			},
+			{
+				"command" : 3,
+				"file" : 8,
+				"line" : 77,
+				"parent" : 19
+			},
+			{
+				"command" : 2,
+				"file" : 4,
+				"line" : 117,
+				"parent" : 20
+			},
+			{
+				"file" : 9
+			},
+			{
+				"command" : 3,
+				"file" : 9,
+				"line" : 33,
+				"parent" : 22
+			},
+			{
+				"command" : 2,
+				"file" : 4,
+				"line" : 117,
+				"parent" : 23
+			},
+			{
+				"file" : 10
+			},
+			{
+				"command" : 3,
+				"file" : 10,
+				"line" : 48,
+				"parent" : 25
+			},
+			{
+				"command" : 2,
+				"file" : 4,
+				"line" : 117,
+				"parent" : 26
+			},
+			{
+				"file" : 11
+			},
+			{
+				"command" : 3,
+				"file" : 11,
+				"line" : 110,
+				"parent" : 28
+			},
+			{
+				"command" : 2,
+				"file" : 4,
+				"line" : 117,
+				"parent" : 29
+			},
+			{
+				"file" : 12
+			},
+			{
+				"command" : 2,
+				"file" : 12,
+				"line" : 55,
+				"parent" : 31
+			},
+			{
+				"file" : 13
+			},
+			{
+				"command" : 3,
+				"file" : 13,
+				"line" : 112,
+				"parent" : 33
+			},
+			{
+				"command" : 2,
+				"file" : 4,
+				"line" : 117,
+				"parent" : 34
+			},
+			{
+				"file" : 14
+			},
+			{
+				"command" : 3,
+				"file" : 14,
+				"line" : 36,
+				"parent" : 36
+			},
+			{
+				"command" : 2,
+				"file" : 4,
+				"line" : 117,
+				"parent" : 37
+			},
+			{
+				"file" : 15
+			},
+			{
+				"command" : 3,
+				"file" : 15,
+				"line" : 1,
+				"parent" : 39
+			},
+			{
+				"command" : 2,
+				"file" : 4,
+				"line" : 117,
+				"parent" : 40
+			},
+			{
+				"file" : 16
+			},
+			{
+				"command" : 3,
+				"file" : 16,
+				"line" : 1,
+				"parent" : 42
+			},
+			{
+				"command" : 2,
+				"file" : 4,
+				"line" : 117,
+				"parent" : 43
+			},
+			{
+				"file" : 17
+			},
+			{
+				"command" : 3,
+				"file" : 17,
+				"line" : 1,
+				"parent" : 45
+			},
+			{
+				"command" : 2,
+				"file" : 4,
+				"line" : 117,
+				"parent" : 46
+			},
+			{
+				"file" : 18
+			},
+			{
+				"command" : 3,
+				"file" : 18,
+				"line" : 18,
+				"parent" : 48
+			},
+			{
+				"command" : 2,
+				"file" : 4,
+				"line" : 117,
+				"parent" : 49
+			},
+			{
+				"file" : 19
+			},
+			{
+				"command" : 3,
+				"file" : 19,
+				"line" : 1,
+				"parent" : 51
+			},
+			{
+				"command" : 2,
+				"file" : 4,
+				"line" : 117,
+				"parent" : 52
+			},
+			{
+				"file" : 20
+			},
+			{
+				"command" : 3,
+				"file" : 20,
+				"line" : 1,
+				"parent" : 54
+			},
+			{
+				"command" : 2,
+				"file" : 4,
+				"line" : 117,
+				"parent" : 55
+			},
+			{
+				"file" : 21
+			},
+			{
+				"command" : 3,
+				"file" : 21,
+				"line" : 60,
+				"parent" : 57
+			},
+			{
+				"command" : 2,
+				"file" : 4,
+				"line" : 117,
+				"parent" : 58
+			},
+			{
+				"file" : 22
+			},
+			{
+				"command" : 3,
+				"file" : 22,
+				"line" : 1,
+				"parent" : 60
+			},
+			{
+				"command" : 2,
+				"file" : 4,
+				"line" : 117,
+				"parent" : 61
+			},
+			{
+				"file" : 23
+			},
+			{
+				"command" : 3,
+				"file" : 23,
+				"line" : 211,
+				"parent" : 63
+			},
+			{
+				"command" : 2,
+				"file" : 4,
+				"line" : 117,
+				"parent" : 64
+			},
+			{
+				"file" : 24
+			},
+			{
+				"command" : 3,
+				"file" : 24,
+				"line" : 90,
+				"parent" : 66
+			},
+			{
+				"command" : 2,
+				"file" : 4,
+				"line" : 117,
+				"parent" : 67
+			},
+			{
+				"file" : 25
+			},
+			{
+				"command" : 3,
+				"file" : 25,
+				"line" : 120,
+				"parent" : 69
+			},
+			{
+				"command" : 2,
+				"file" : 4,
+				"line" : 117,
+				"parent" : 70
+			},
+			{
+				"file" : 26
+			},
+			{
+				"command" : 3,
+				"file" : 26,
+				"line" : 44,
+				"parent" : 72
+			},
+			{
+				"command" : 2,
+				"file" : 4,
+				"line" : 117,
+				"parent" : 73
+			}
+		]
+	},
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 5,
+			"id" : "compiler-rt-headers::@14b3099d61bfdbeae804"
+		},
+		{
+			"backtrace" : 7,
+			"id" : "builtins::@45bfbb4ef90931961baa"
+		},
+		{
+			"backtrace" : 9,
+			"id" : "crt::@45bfbb4ef90931961baa"
+		},
+		{
+			"backtrace" : 12,
+			"id" : "lsan::@ffaf83cd0e47a0159977"
+		},
+		{
+			"backtrace" : 15,
+			"id" : "ubsan::@e17466177a8542cbb834"
+		},
+		{
+			"backtrace" : 18,
+			"id" : "asan::@9e16ccd2674f918a5a03"
+		},
+		{
+			"backtrace" : 21,
+			"id" : "rtsan::@fa2b3bbe96fa5ce47019"
+		},
+		{
+			"backtrace" : 24,
+			"id" : "dfsan::@da21de211065eaf619f5"
+		},
+		{
+			"backtrace" : 27,
+			"id" : "msan::@5157aadeb60ad369fcdd"
+		},
+		{
+			"backtrace" : 30,
+			"id" : "hwasan::@514f2a244b32f410d42f"
+		},
+		{
+			"backtrace" : 32,
+			"id" : "dd::@404e7748b7de3b98c168"
+		},
+		{
+			"backtrace" : 35,
+			"id" : "tsan::@a0eee0c97d8cdf670040"
+		},
+		{
+			"backtrace" : 38,
+			"id" : "tysan::@f33fd67be3dc231d96f7"
+		},
+		{
+			"backtrace" : 41,
+			"id" : "safestack::@fc19b8031708ca7a4eb0"
+		},
+		{
+			"backtrace" : 44,
+			"id" : "cfi::@86d44c3704b4e6a133be"
+		},
+		{
+			"backtrace" : 47,
+			"id" : "scudo_standalone::@f34ab090331fc08930b2"
+		},
+		{
+			"backtrace" : 50,
+			"id" : "ubsan-minimal::@e1d192106379f23ea957"
+		},
+		{
+			"backtrace" : 53,
+			"id" : "gwp_asan::@4daa620aa90ea7f743fb"
+		},
+		{
+			"backtrace" : 56,
+			"id" : "nsan::@7edf5c9e82eb1e63b813"
+		},
+		{
+			"backtrace" : 59,
+			"id" : "profile::@ac34d890ca9dc330d814"
+		},
+		{
+			"backtrace" : 62,
+			"id" : "ctx_profile::@72f88fd056248d23937a"
+		},
+		{
+			"backtrace" : 65,
+			"id" : "xray::@954b385044cd174211f7"
+		},
+		{
+			"backtrace" : 68,
+			"id" : "fuzzer::@fc35b86670fecb6a72e9"
+		},
+		{
+			"backtrace" : 71,
+			"id" : "memprof::@e3b055d5ce0fd23ae5cb"
+		},
+		{
+			"backtrace" : 74,
+			"id" : "orc::@99ae2e081afe23c9a2a8"
+		}
+	],
+	"folder" : 
+	{
+		"name" : "Compiler-RT/Metatargets"
+	},
+	"id" : "compiler-rt::@6890427a1f51a3e7e1df",
+	"name" : "compiler-rt",
+	"paths" : 
+	{
+		"build" : ".",
+		"source" : "."
+	},
+	"sources" : [],
+	"type" : "UTILITY"
+}

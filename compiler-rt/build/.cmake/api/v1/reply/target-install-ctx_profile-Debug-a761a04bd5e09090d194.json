@@ -1,0 +1,103 @@
+{
+	"backtrace" : 3,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_custom_target",
+			"add_compiler_rt_install_targets",
+			"add_compiler_rt_runtime",
+			"add_dependencies"
+		],
+		"files" : 
+		[
+			"cmake/Modules/CompilerRTUtils.cmake",
+			"cmake/Modules/AddCompilerRT.cmake",
+			"lib/ctx_profile/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 2
+			},
+			{
+				"command" : 2,
+				"file" : 2,
+				"line" : 25,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 430,
+				"parent" : 1
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 574,
+				"parent" : 2
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 610,
+				"parent" : 2
+			}
+		]
+	},
+	"dependencies" : 
+	[
+		{
+			"id" : "ctx_profile::@72f88fd056248d23937a"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "install-clang_rt.ctx_profile-x86_64::@72f88fd056248d23937a"
+		}
+	],
+	"folder" : 
+	{
+		"name" : "Compiler-RT/Installation"
+	},
+	"id" : "install-ctx_profile::@72f88fd056248d23937a",
+	"name" : "install-ctx_profile",
+	"paths" : 
+	{
+		"build" : "lib/ctx_profile",
+		"source" : "lib/ctx_profile"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		},
+		{
+			"name" : "CMake Rules",
+			"sourceIndexes" : 
+			[
+				1
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 3,
+			"isGenerated" : true,
+			"path" : "build/lib/ctx_profile/CMakeFiles/install-ctx_profile",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "build/lib/ctx_profile/CMakeFiles/install-ctx_profile.rule",
+			"sourceGroupIndex" : 1
+		}
+	],
+	"type" : "UTILITY"
+}

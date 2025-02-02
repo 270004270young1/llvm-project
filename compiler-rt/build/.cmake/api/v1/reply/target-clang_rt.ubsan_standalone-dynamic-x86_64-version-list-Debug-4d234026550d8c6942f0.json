@@ -1,0 +1,99 @@
+{
+	"backtrace" : 2,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_custom_target",
+			"add_sanitizer_rt_version_list",
+			"add_custom_command"
+		],
+		"files" : 
+		[
+			"cmake/Modules/SanitizerUtils.cmake",
+			"lib/ubsan/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 209,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 92,
+				"parent" : 1
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 83,
+				"parent" : 1
+			}
+		]
+	},
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 3,
+			"id" : "clang_rt.ubsan_standalone-x86_64::@e17466177a8542cbb834"
+		},
+		{
+			"backtrace" : 3,
+			"id" : "clang_rt.ubsan_standalone_cxx-x86_64::@e17466177a8542cbb834"
+		}
+	],
+	"id" : "clang_rt.ubsan_standalone-dynamic-x86_64-version-list::@e17466177a8542cbb834",
+	"name" : "clang_rt.ubsan_standalone-dynamic-x86_64-version-list",
+	"paths" : 
+	{
+		"build" : "lib/ubsan",
+		"source" : "lib/ubsan"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		},
+		{
+			"name" : "CMake Rules",
+			"sourceIndexes" : 
+			[
+				1,
+				2
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 2,
+			"isGenerated" : true,
+			"path" : "build/lib/ubsan/CMakeFiles/clang_rt.ubsan_standalone-dynamic-x86_64-version-list",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "build/lib/ubsan/CMakeFiles/clang_rt.ubsan_standalone-dynamic-x86_64-version-list.rule",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "build/lib/ubsan/clang_rt.ubsan_standalone-dynamic-x86_64.vers.rule",
+			"sourceGroupIndex" : 1
+		}
+	],
+	"type" : "UTILITY"
+}

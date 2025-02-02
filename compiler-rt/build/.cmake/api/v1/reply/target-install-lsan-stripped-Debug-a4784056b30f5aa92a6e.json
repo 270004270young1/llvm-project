@@ -1,0 +1,103 @@
+{
+	"backtrace" : 3,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_custom_target",
+			"add_compiler_rt_install_targets",
+			"add_compiler_rt_runtime",
+			"add_dependencies"
+		],
+		"files" : 
+		[
+			"cmake/Modules/CompilerRTUtils.cmake",
+			"cmake/Modules/AddCompilerRT.cmake",
+			"lib/lsan/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 2
+			},
+			{
+				"command" : 2,
+				"file" : 2,
+				"line" : 73,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 430,
+				"parent" : 1
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 579,
+				"parent" : 2
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 611,
+				"parent" : 2
+			}
+		]
+	},
+	"dependencies" : 
+	[
+		{
+			"id" : "lsan::@ffaf83cd0e47a0159977"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "install-clang_rt.lsan-x86_64-stripped::@ffaf83cd0e47a0159977"
+		}
+	],
+	"folder" : 
+	{
+		"name" : "Compiler-RT/Installation"
+	},
+	"id" : "install-lsan-stripped::@ffaf83cd0e47a0159977",
+	"name" : "install-lsan-stripped",
+	"paths" : 
+	{
+		"build" : "lib/lsan",
+		"source" : "lib/lsan"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		},
+		{
+			"name" : "CMake Rules",
+			"sourceIndexes" : 
+			[
+				1
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 3,
+			"isGenerated" : true,
+			"path" : "build/lib/lsan/CMakeFiles/install-lsan-stripped",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "build/lib/lsan/CMakeFiles/install-lsan-stripped.rule",
+			"sourceGroupIndex" : 1
+		}
+	],
+	"type" : "UTILITY"
+}

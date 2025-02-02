@@ -1,0 +1,68 @@
+{
+	"backtrace" : 2,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_custom_target",
+			"add_compiler_rt_component",
+			"add_dependencies",
+			"add_compiler_rt_runtime"
+		],
+		"files" : 
+		[
+			"cmake/Modules/AddCompilerRT.cmake",
+			"lib/safestack/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 1,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 112,
+				"parent" : 1
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 12,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 446,
+				"parent" : 3
+			}
+		]
+	},
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 4,
+			"id" : "clang_rt.safestack-x86_64::@fc19b8031708ca7a4eb0"
+		}
+	],
+	"folder" : 
+	{
+		"name" : "Compiler-RT/Components"
+	},
+	"id" : "safestack::@fc19b8031708ca7a4eb0",
+	"name" : "safestack",
+	"paths" : 
+	{
+		"build" : "lib/safestack",
+		"source" : "lib/safestack"
+	},
+	"sources" : [],
+	"type" : "UTILITY"
+}

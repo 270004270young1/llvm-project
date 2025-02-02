@@ -1,0 +1,60 @@
+Testing compiler for supporting FLAGS-fxray-instrument -nodefaultlibs:
+Command: /usr/bin/gcc;;;;-Wall;-Wno-unused-parameter;-fxray-instrument;;-nodefaultlibs;-o;/home/youngminghei/Documents/Fyp/llvm/llvm-project/compiler-rt/build/CMakeFiles/test.o;-c;/home/youngminghei/Documents/Fyp/llvm/llvm-project/compiler-rt/build/CMakeFiles/src.c
+
+gcc: error: unrecognized command-line option ‘-fxray-instrument’
+
+1
+Testing compiler for supporting FLAGS-nogpulib -nodefaultlibs:
+Command: /usr/bin/gcc;;;;-Wall;-Wno-unused-parameter;-nogpulib;;-nodefaultlibs;-o;/home/youngminghei/Documents/Fyp/llvm/llvm-project/compiler-rt/build/CMakeFiles/test.o;-c;/home/youngminghei/Documents/Fyp/llvm/llvm-project/compiler-rt/build/CMakeFiles/src.c
+
+gcc: error: unrecognized command-line option ‘-nogpulib’
+
+1
+Testing compiler for supporting FLAGS-fconvergent-functions -nodefaultlibs:
+Command: /usr/bin/gcc;;;;-Wall;-Wno-unused-parameter;-fconvergent-functions;;-nodefaultlibs;-o;/home/youngminghei/Documents/Fyp/llvm/llvm-project/compiler-rt/build/CMakeFiles/test.o;-c;/home/youngminghei/Documents/Fyp/llvm/llvm-project/compiler-rt/build/CMakeFiles/src.c
+
+gcc: error: unrecognized command-line option ‘-fconvergent-functions’; did you mean ‘-finstrument-functions’?
+
+1
+Testing compiler for supporting FLAGS-Xclang -mcode-object-version=none -nodefaultlibs:
+Command: /usr/bin/gcc;;;;-Wall;-Wno-unused-parameter;-Xclang;-mcode-object-version=none;;-nodefaultlibs;-o;/home/youngminghei/Documents/Fyp/llvm/llvm-project/compiler-rt/build/CMakeFiles/test.o;-c;/home/youngminghei/Documents/Fyp/llvm/llvm-project/compiler-rt/build/CMakeFiles/src.c
+
+gcc: error: unrecognized command-line option ‘-Xclang’
+gcc: error: unrecognized command-line option ‘-mcode-object-version=none’
+
+1
+Testing compiler for supporting FLAGS/Zl -nodefaultlibs:
+Command: /usr/bin/gcc;;;;-Wall;-Wno-unused-parameter;/Zl;;-nodefaultlibs;-o;/home/youngminghei/Documents/Fyp/llvm/llvm-project/compiler-rt/build/CMakeFiles/test.o;-c;/home/youngminghei/Documents/Fyp/llvm/llvm-project/compiler-rt/build/CMakeFiles/src.c
+
+gcc: warning: /Zl: linker input file unused because linking not done
+gcc: error: /Zl: linker input file not found: No such file or directory
+
+1
+Testing compiler for supporting SOURCE
+asm(".arch armv8-a+lse")
+asm("cas w0, w1, [x2]")
+:
+Command: /usr/bin/gcc;;;;-Wall;-Wno-unused-parameter;;-o;/home/youngminghei/Documents/Fyp/llvm/llvm-project/compiler-rt/build/CMakeFiles/test.o;-c;/home/youngminghei/Documents/Fyp/llvm/llvm-project/compiler-rt/build/CMakeFiles/src.c
+
+/tmp/ccoxlZ7R.s: Assembler messages:
+/tmp/ccoxlZ7R.s:4: Error: no such architecture: `armv8'
+/tmp/ccoxlZ7R.s:4: Error: junk at end of line, first unrecognized character is `-'
+/tmp/ccoxlZ7R.s:5: Error: no such instruction: `cas w0,w1,[x2]'
+
+1
+Testing compiler for supporting SOURCE
+void foo(void)  __arm_streaming_compatible {
+  asm(".arch armv9-a+sme2")
+  asm("smstart")
+  asm("ldr zt0, [sp]")
+}
+:
+Command: /usr/bin/gcc;;;;-Wall;-Wno-unused-parameter;;-o;/home/youngminghei/Documents/Fyp/llvm/llvm-project/compiler-rt/build/CMakeFiles/test.o;-c;/home/youngminghei/Documents/Fyp/llvm/llvm-project/compiler-rt/build/CMakeFiles/src.c
+
+/home/youngminghei/Documents/Fyp/llvm/llvm-project/compiler-rt/build/CMakeFiles/src.c: In function ‘foo’:
+/home/youngminghei/Documents/Fyp/llvm/llvm-project/compiler-rt/build/CMakeFiles/src.c:2:17: error: expected declaration specifiers before ‘__arm_streaming_compatible’
+    2 | void foo(void)  __arm_streaming_compatible {
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/youngminghei/Documents/Fyp/llvm/llvm-project/compiler-rt/build/CMakeFiles/src.c:8: error: expected ‘{’ at end of input
+
+1

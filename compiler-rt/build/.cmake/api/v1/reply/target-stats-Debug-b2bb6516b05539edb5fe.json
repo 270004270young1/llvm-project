@@ -1,0 +1,77 @@
+{
+	"backtrace" : 1,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_custom_target",
+			"add_dependencies",
+			"add_compiler_rt_runtime"
+		],
+		"files" : 
+		[
+			"lib/stats/CMakeLists.txt",
+			"cmake/Modules/AddCompilerRT.cmake"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 6,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 23,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 446,
+				"parent" : 2
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 37,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 446,
+				"parent" : 4
+			}
+		]
+	},
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 3,
+			"id" : "clang_rt.stats-x86_64::@5f72bbb980adc6b23d09"
+		},
+		{
+			"backtrace" : 5,
+			"id" : "clang_rt.stats_client-x86_64::@5f72bbb980adc6b23d09"
+		}
+	],
+	"folder" : 
+	{
+		"name" : "Compiler-RT/Metatargets"
+	},
+	"id" : "stats::@5f72bbb980adc6b23d09",
+	"name" : "stats",
+	"paths" : 
+	{
+		"build" : "lib/stats",
+		"source" : "lib/stats"
+	},
+	"sources" : [],
+	"type" : "UTILITY"
+}

@@ -107,9 +107,6 @@ const uptr kLocalReadMapSize = 1027;
 
 // Read access map size for local read tracking.
 const uptr kReadAccessMapSize = 10027;
-// Each bit represent whether a thread participate in the memory access.
-constexpr uptr kReadAccessMapThreadCellSize = ceil(kThreadSlotCount / (sizeof(u64) * 8ULL));
-
 
 #if TSAN_NO_HISTORY
 const bool kCollectHistory = false;

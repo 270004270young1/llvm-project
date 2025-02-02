@@ -1,0 +1,99 @@
+{
+	"backtrace" : 2,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_custom_target",
+			"add_sanitizer_rt_version_list",
+			"add_custom_command"
+		],
+		"files" : 
+		[
+			"cmake/Modules/SanitizerUtils.cmake",
+			"lib/asan/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 291,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 92,
+				"parent" : 1
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 83,
+				"parent" : 1
+			}
+		]
+	},
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 3,
+			"id" : "clang_rt.asan-x86_64::@9e16ccd2674f918a5a03"
+		},
+		{
+			"backtrace" : 3,
+			"id" : "clang_rt.asan_cxx-x86_64::@9e16ccd2674f918a5a03"
+		}
+	],
+	"id" : "clang_rt.asan-dynamic-x86_64-version-list::@9e16ccd2674f918a5a03",
+	"name" : "clang_rt.asan-dynamic-x86_64-version-list",
+	"paths" : 
+	{
+		"build" : "lib/asan",
+		"source" : "lib/asan"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		},
+		{
+			"name" : "CMake Rules",
+			"sourceIndexes" : 
+			[
+				1,
+				2
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 2,
+			"isGenerated" : true,
+			"path" : "build/lib/asan/CMakeFiles/clang_rt.asan-dynamic-x86_64-version-list",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "build/lib/asan/CMakeFiles/clang_rt.asan-dynamic-x86_64-version-list.rule",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "build/lib/asan/clang_rt.asan-dynamic-x86_64.vers.rule",
+			"sourceGroupIndex" : 1
+		}
+	],
+	"type" : "UTILITY"
+}

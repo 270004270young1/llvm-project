@@ -1,0 +1,107 @@
+{
+	"backtrace" : 2,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_custom_target",
+			"add_sanitizer_rt_symbols",
+			"add_custom_command"
+		],
+		"files" : 
+		[
+			"cmake/Modules/SanitizerUtils.cmake",
+			"lib/memprof/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 200,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 42,
+				"parent" : 1
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 33,
+				"parent" : 1
+			}
+		]
+	},
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 3,
+			"id" : "clang_rt.memprof-x86_64::@e3b055d5ce0fd23ae5cb"
+		}
+	],
+	"id" : "clang_rt.memprof-x86_64-symbols::@e3b055d5ce0fd23ae5cb",
+	"name" : "clang_rt.memprof-x86_64-symbols",
+	"paths" : 
+	{
+		"build" : "lib/memprof",
+		"source" : "lib/memprof"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "",
+			"sourceIndexes" : 
+			[
+				0,
+				1,
+				2
+			]
+		},
+		{
+			"name" : "CMake Rules",
+			"sourceIndexes" : 
+			[
+				3,
+				4
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 2,
+			"path" : "lib/sanitizer_common/scripts/gen_dynamic_list.py",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"path" : "lib/memprof/memprof.syms.extra",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"isGenerated" : true,
+			"path" : "build/lib/memprof/CMakeFiles/clang_rt.memprof-x86_64-symbols",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "build/lib/memprof/CMakeFiles/clang_rt.memprof-x86_64-symbols.rule",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "build/lib/memprof/clang_rt.memprof-x86_64.syms-stamp.rule",
+			"sourceGroupIndex" : 1
+		}
+	],
+	"type" : "UTILITY"
+}

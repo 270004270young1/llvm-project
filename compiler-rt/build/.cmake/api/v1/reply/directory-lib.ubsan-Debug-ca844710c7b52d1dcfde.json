@@ -1,0 +1,147 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install",
+			"add_compiler_rt_runtime",
+			"add_sanitizer_rt_symbols"
+		],
+		"files" : 
+		[
+			"cmake/Modules/AddCompilerRT.cmake",
+			"lib/ubsan/CMakeLists.txt",
+			"cmake/Modules/SanitizerUtils.cmake"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 177,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 364,
+				"parent" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 194,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 364,
+				"parent" : 3
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 225,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 364,
+				"parent" : 5
+			},
+			{
+				"command" : 2,
+				"file" : 1,
+				"line" : 246,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 2,
+				"line" : 46,
+				"parent" : 7
+			},
+			{
+				"command" : 2,
+				"file" : 1,
+				"line" : 250,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 2,
+				"line" : 46,
+				"parent" : 9
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 2,
+			"component" : "clang_rt.ubsan_standalone-x86_64",
+			"destination" : "lib/linux",
+			"paths" : 
+			[
+				"lib/linux/libclang_rt.ubsan_standalone-x86_64.a"
+			],
+			"targetId" : "clang_rt.ubsan_standalone-x86_64::@e17466177a8542cbb834",
+			"targetIndex" : 140,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 4,
+			"component" : "clang_rt.ubsan_standalone_cxx-x86_64",
+			"destination" : "lib/linux",
+			"paths" : 
+			[
+				"lib/linux/libclang_rt.ubsan_standalone_cxx-x86_64.a"
+			],
+			"targetId" : "clang_rt.ubsan_standalone_cxx-x86_64::@e17466177a8542cbb834",
+			"targetIndex" : 142,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 6,
+			"component" : "clang_rt.ubsan_standalone-dynamic-x86_64",
+			"destination" : "lib/linux",
+			"paths" : 
+			[
+				"lib/linux/libclang_rt.ubsan_standalone-x86_64.so"
+			],
+			"targetId" : "clang_rt.ubsan_standalone-dynamic-x86_64::@e17466177a8542cbb834",
+			"targetIndex" : 138,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 8,
+			"component" : "Unspecified",
+			"destination" : "lib/linux",
+			"paths" : 
+			[
+				"build/lib/linux/libclang_rt.ubsan_standalone-x86_64.a.syms"
+			],
+			"type" : "file"
+		},
+		{
+			"backtrace" : 10,
+			"component" : "Unspecified",
+			"destination" : "lib/linux",
+			"paths" : 
+			[
+				"build/lib/linux/libclang_rt.ubsan_standalone_cxx-x86_64.a.syms"
+			],
+			"type" : "file"
+		}
+	],
+	"paths" : 
+	{
+		"build" : "lib/ubsan",
+		"source" : "lib/ubsan"
+	}
+}

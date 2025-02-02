@@ -1,0 +1,134 @@
+{
+	"backtrace" : 2,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_custom_target",
+			"add_compiler_rt_component",
+			"add_dependencies",
+			"add_compiler_rt_runtime",
+			"add_sanitizer_rt_symbols"
+		],
+		"files" : 
+		[
+			"cmake/Modules/AddCompilerRT.cmake",
+			"lib/ubsan/CMakeLists.txt",
+			"cmake/Modules/SanitizerUtils.cmake"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 76,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 112,
+				"parent" : 1
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 177,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 446,
+				"parent" : 3
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 194,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 446,
+				"parent" : 5
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 225,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 446,
+				"parent" : 7
+			},
+			{
+				"command" : 4,
+				"file" : 1,
+				"line" : 246,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 2,
+				"line" : 49,
+				"parent" : 9
+			},
+			{
+				"command" : 4,
+				"file" : 1,
+				"line" : 250,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 2,
+				"line" : 49,
+				"parent" : 11
+			}
+		]
+	},
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 4,
+			"id" : "clang_rt.ubsan_standalone-x86_64::@e17466177a8542cbb834"
+		},
+		{
+			"backtrace" : 6,
+			"id" : "clang_rt.ubsan_standalone_cxx-x86_64::@e17466177a8542cbb834"
+		},
+		{
+			"backtrace" : 8,
+			"id" : "clang_rt.ubsan_standalone-dynamic-x86_64::@e17466177a8542cbb834"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "clang_rt.ubsan_standalone-x86_64-symbols::@e17466177a8542cbb834"
+		},
+		{
+			"backtrace" : 12,
+			"id" : "clang_rt.ubsan_standalone_cxx-x86_64-symbols::@e17466177a8542cbb834"
+		}
+	],
+	"folder" : 
+	{
+		"name" : "Compiler-RT/Components"
+	},
+	"id" : "ubsan::@e17466177a8542cbb834",
+	"name" : "ubsan",
+	"paths" : 
+	{
+		"build" : "lib/ubsan",
+		"source" : "lib/ubsan"
+	},
+	"sources" : [],
+	"type" : "UTILITY"
+}

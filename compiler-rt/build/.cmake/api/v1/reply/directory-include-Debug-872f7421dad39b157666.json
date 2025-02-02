@@ -1,0 +1,140 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install"
+		],
+		"files" : 
+		[
+			"include/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 86,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 91,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 97,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 109,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 114,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 119,
+				"parent" : 0
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 1,
+			"component" : "compiler-rt-headers",
+			"destination" : "include/sanitizer",
+			"paths" : 
+			[
+				"include/sanitizer/allocator_interface.h",
+				"include/sanitizer/asan_interface.h",
+				"include/sanitizer/common_interface_defs.h",
+				"include/sanitizer/coverage_interface.h",
+				"include/sanitizer/dfsan_interface.h",
+				"include/sanitizer/hwasan_interface.h",
+				"include/sanitizer/linux_syscall_hooks.h",
+				"include/sanitizer/lsan_interface.h",
+				"include/sanitizer/msan_interface.h",
+				"include/sanitizer/netbsd_syscall_hooks.h",
+				"include/sanitizer/rtsan_interface.h",
+				"include/sanitizer/scudo_interface.h",
+				"include/sanitizer/tsan_interface.h",
+				"include/sanitizer/tsan_interface_atomic.h",
+				"include/sanitizer/ubsan_interface.h"
+			],
+			"type" : "file"
+		},
+		{
+			"backtrace" : 2,
+			"component" : "compiler-rt-headers",
+			"destination" : "include/fuzzer",
+			"paths" : 
+			[
+				"include/fuzzer/FuzzedDataProvider.h"
+			],
+			"type" : "file"
+		},
+		{
+			"backtrace" : 3,
+			"component" : "compiler-rt-headers",
+			"destination" : "include/sanitizer",
+			"paths" : 
+			[
+				"include/sanitizer/memprof_interface.h"
+			],
+			"type" : "file"
+		},
+		{
+			"backtrace" : 4,
+			"component" : "compiler-rt-headers",
+			"destination" : "include/xray",
+			"paths" : 
+			[
+				"include/xray/xray_interface.h",
+				"include/xray/xray_log_interface.h",
+				"include/xray/xray_records.h"
+			],
+			"type" : "file"
+		},
+		{
+			"backtrace" : 5,
+			"component" : "compiler-rt-headers",
+			"destination" : "include/orc",
+			"paths" : 
+			[
+				"include/orc_rt/c_api.h"
+			],
+			"type" : "file"
+		},
+		{
+			"backtrace" : 6,
+			"component" : "compiler-rt-headers",
+			"destination" : "include/profile",
+			"paths" : 
+			[
+				"include/profile/InstrProfData.inc",
+				"include/profile/instr_prof_interface.h"
+			],
+			"type" : "file"
+		}
+	],
+	"paths" : 
+	{
+		"build" : "include",
+		"source" : "include"
+	}
+}

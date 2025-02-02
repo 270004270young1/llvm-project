@@ -1,0 +1,39 @@
+{
+	"backtrace" : 1,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_custom_target"
+		],
+		"files" : 
+		[
+			"lib/orc/tests/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 6,
+				"parent" : 0
+			}
+		]
+	},
+	"folder" : 
+	{
+		"name" : "Compiler-RT/Tests"
+	},
+	"id" : "OrcRTUnitTests::@2cbd9cf88777583260ab",
+	"name" : "OrcRTUnitTests",
+	"paths" : 
+	{
+		"build" : "lib/orc/tests",
+		"source" : "lib/orc/tests"
+	},
+	"sources" : [],
+	"type" : "UTILITY"
+}

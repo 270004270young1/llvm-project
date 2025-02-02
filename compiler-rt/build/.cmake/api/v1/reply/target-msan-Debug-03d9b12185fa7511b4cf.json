@@ -1,0 +1,115 @@
+{
+	"backtrace" : 2,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_custom_target",
+			"add_compiler_rt_component",
+			"add_dependencies",
+			"add_compiler_rt_runtime",
+			"add_compiler_rt_resource_file"
+		],
+		"files" : 
+		[
+			"cmake/Modules/AddCompilerRT.cmake",
+			"lib/msan/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 48,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 112,
+				"parent" : 1
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 51,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 446,
+				"parent" : 3
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 65,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 446,
+				"parent" : 5
+			},
+			{
+				"command" : 2,
+				"file" : 1,
+				"line" : 81,
+				"parent" : 0
+			},
+			{
+				"command" : 4,
+				"file" : 1,
+				"line" : 86,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 567,
+				"parent" : 8
+			}
+		]
+	},
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 4,
+			"id" : "clang_rt.msan-x86_64::@5157aadeb60ad369fcdd"
+		},
+		{
+			"backtrace" : 6,
+			"id" : "clang_rt.msan_cxx-x86_64::@5157aadeb60ad369fcdd"
+		},
+		{
+			"backtrace" : 7,
+			"id" : "clang_rt.msan-x86_64-symbols::@5157aadeb60ad369fcdd"
+		},
+		{
+			"backtrace" : 7,
+			"id" : "clang_rt.msan_cxx-x86_64-symbols::@5157aadeb60ad369fcdd"
+		},
+		{
+			"backtrace" : 9,
+			"id" : "msan_ignorelist::@5157aadeb60ad369fcdd"
+		}
+	],
+	"folder" : 
+	{
+		"name" : "Compiler-RT/Components"
+	},
+	"id" : "msan::@5157aadeb60ad369fcdd",
+	"name" : "msan",
+	"paths" : 
+	{
+		"build" : "lib/msan",
+		"source" : "lib/msan"
+	},
+	"sources" : [],
+	"type" : "UTILITY"
+}

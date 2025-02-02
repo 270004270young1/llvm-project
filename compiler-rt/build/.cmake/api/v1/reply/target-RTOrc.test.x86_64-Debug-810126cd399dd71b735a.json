@@ -1,0 +1,178 @@
+{
+	"archive" : {},
+	"artifacts" : 
+	[
+		{
+			"path" : "lib/orc/tests/libRTOrc.test.x86_64.a"
+		}
+	],
+	"backtrace" : 2,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_library",
+			"add_orc_lib",
+			"include_directories"
+		],
+		"files" : 
+		[
+			"lib/orc/tests/CMakeLists.txt",
+			"lib/orc/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 111,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 22,
+				"parent" : 1
+			},
+			{
+				"file" : 1
+			},
+			{
+				"command" : 2,
+				"file" : 1,
+				"line" : 28,
+				"parent" : 3
+			},
+			{
+				"command" : 2,
+				"file" : 1,
+				"line" : 29,
+				"parent" : 3
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 3,
+				"parent" : 0
+			}
+		]
+	},
+	"dependencies" : 
+	[
+		{
+			"id" : "RTOrc.x86_64::@99ae2e081afe23c9a2a8"
+		}
+	],
+	"folder" : 
+	{
+		"name" : "Compiler-RT/Tests/Runtime"
+	},
+	"id" : "RTOrc.test.x86_64::@2cbd9cf88777583260ab",
+	"name" : "RTOrc.test.x86_64",
+	"nameOnDisk" : "libRTOrc.test.x86_64.a",
+	"paths" : 
+	{
+		"build" : "lib/orc/tests",
+		"source" : "lib/orc/tests"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "Object Libraries",
+			"sourceIndexes" : 
+			[
+				0,
+				1,
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
+				8,
+				9,
+				10,
+				11
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 2,
+			"isGenerated" : true,
+			"path" : "build/lib/orc/CMakeFiles/RTOrc.x86_64.dir/debug.cpp.o",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"isGenerated" : true,
+			"path" : "build/lib/orc/CMakeFiles/RTOrc.x86_64.dir/dlfcn_wrapper.cpp.o",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"isGenerated" : true,
+			"path" : "build/lib/orc/CMakeFiles/RTOrc.x86_64.dir/extensible_rtti.cpp.o",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"isGenerated" : true,
+			"path" : "build/lib/orc/CMakeFiles/RTOrc.x86_64.dir/log_error_to_stderr.cpp.o",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"isGenerated" : true,
+			"path" : "build/lib/orc/CMakeFiles/RTOrc.x86_64.dir/run_program_wrapper.cpp.o",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"isGenerated" : true,
+			"path" : "build/lib/orc/CMakeFiles/RTOrc.x86_64.dir/resolve.cpp.o",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"isGenerated" : true,
+			"path" : "build/lib/orc/CMakeFiles/RTOrc.x86_64.dir/elfnix_platform.cpp.o",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"isGenerated" : true,
+			"path" : "build/lib/orc/CMakeFiles/RTOrc.x86_64.dir/elfnix_tls.x86-64.S.o",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"isGenerated" : true,
+			"path" : "build/lib/orc/CMakeFiles/RTOrc.x86_64.dir/elfnix_tls.aarch64.S.o",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"isGenerated" : true,
+			"path" : "build/lib/orc/CMakeFiles/RTOrc.x86_64.dir/elfnix_tls.ppc64.S.o",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"isGenerated" : true,
+			"path" : "build/lib/orc/CMakeFiles/RTOrc.x86_64.dir/sysv_reenter.arm64.S.o",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"isGenerated" : true,
+			"path" : "build/lib/orc/CMakeFiles/RTOrc.x86_64.dir/sysv_reenter.x86-64.S.o",
+			"sourceGroupIndex" : 0
+		}
+	],
+	"type" : "STATIC_LIBRARY"
+}
