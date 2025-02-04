@@ -11,12 +11,13 @@ namespace __tsan {
 
 class LocalReadMap {
  public:
-  LocalReadMap(Sid sid);
 
   bool AddOrUpdate(uptr addr, RawShadow shadow);
   void Remove(uptr addr);
   RawShadow Get(uptr addr);
+  void Init(Sid sid);
 
+  LocalReadMap() = default;
   LocalReadMap(const LocalReadMap&) = delete;
   LocalReadMap(LocalReadMap&&) = delete;
   LocalReadMap& operator=(const LocalReadMap&) = default;

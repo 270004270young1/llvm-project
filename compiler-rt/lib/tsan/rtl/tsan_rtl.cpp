@@ -396,6 +396,7 @@ Context::Context()
   for (uptr i = 0; i < ARRAY_SIZE(slots); i++) {
     TidSlot* slot = &slots[i];
     slot->sid = static_cast<Sid>(i);
+    slot->localReadMap.Init(slot->sid);
     slot_queue.PushBack(slot);
   }
   global_epoch = 1;

@@ -170,11 +170,13 @@ NOINLINE void DoReportRace(ThreadState* thr, RawShadow* shadow_mem, Shadow cur,
 
 #if !TSAN_VECTORIZE
 ALWAYS_INLINE
-bool ContainsSameAccess(RawShadow* s, Shadow cur, int unused0, int unused1,
+bool ContainsSameAccess(RawShadow* s, RawShadow* localReads, Shadow cur, int unused0, int unused1,
                         AccessType typ) {
-  for (uptr i = 0; i < kShadowCnt; i++) {
-    auto old = LoadShadow(&s[i]);
+  for (uptr i = 0; i < kShadowCnt+kSidCnt; i++) {
+    auto old = i<kShadowCnt ? LoadShadow(&s[i]) : localReads[i];
     if (!(typ & kAccessRead)) {
+      if(i>=kShadowCnt)
+        return false;
       if (old == cur.raw())
         return true;
       continue;
@@ -192,22 +194,36 @@ bool ContainsSameAccess(RawShadow* s, Shadow cur, int unused0, int unused1,
 }
 
 ALWAYS_INLINE
-bool CheckRaces(ThreadState* thr, RawShadow* shadow_mem, Shadow cur,
+bool CheckRaces(ThreadState* thr, RawShadow* shadow_mem, RawShadow* localReads, unsigned localReadSize, uptr addr, Shadow cur,
                 int unused0, int unused1, AccessType typ) {
   bool stored = false;
-  for (uptr idx = 0; idx < kShadowCnt; idx++) {
-    RawShadow* sp = &shadow_mem[idx];
+  for (uptr idx = 0; idx < (typ & kAccessRead ? localReadSize : 0UL) + kShadowCnt; idx++) {
+    RawShadow* sp = idx < localReadSize ? &localReads[idx] : &shadow_mem[idx];
     Shadow old(LoadShadow(sp));
+
     if (LIKELY(old.raw() == Shadow::kEmpty)) {
-      if (!(typ & kAccessCheckOnly) && !stored)
-        StoreShadow(sp, cur.raw());
-      return false;
+      if(typ & kAccessRead){
+        if (!(typ & kAccessCheckOnly) && !stored && !ctx->read_access_map.Insert(addr, cur.sid()))
+          StoreShadow(sp, cur.raw());
+        return false;
+      }else{
+        if (!(typ & kAccessCheckOnly) && !stored)
+          StoreShadow(sp, cur.raw());
+      
+        if(CheckLocalReadMap(addr,cur,shadow_mem,thr,typ))
+          return true;
+    
+        ctx->read_access_map.Remove(addr);
+        return false;
+      }
     }
+    
     if (LIKELY(!(cur.access() & old.access())))
       continue;
     if (LIKELY(cur.sid() == old.sid())) {
       if (!(typ & kAccessCheckOnly) &&
-          LIKELY(cur.access() == old.access() && old.IsRWWeakerOrEqual(typ))) {
+          LIKELY(cur.access() == old.access() &&
+          old.IsRWWeakerOrEqual(typ))) {
         StoreShadow(sp, cur.raw());
         stored = true;
       }
@@ -220,16 +236,80 @@ bool CheckRaces(ThreadState* thr, RawShadow* shadow_mem, Shadow cur,
     DoReportRace(thr, shadow_mem, cur, old, typ);
     return true;
   }
+
+  if(typ & kAccessRead){
+    if (!(typ & kAccessCheckOnly) && !stored && ctx->read_access_map.Insert(addr, cur.sid())) {
+      stored = true;
+    }
+  }else{
+    if(CheckLocalReadMap(addr,cur,shadow_mem,thr,typ))
+      return true;
+    ctx->read_access_map.Remove(addr);
+  }
+    
+  
   // We did not find any races and had already stored
   // the current access info, so we are done.
-  if (LIKELY(stored))
+  if (LIKELY(stored || (typ & kAccessCheckOnly)))
     return false;
   // Choose a random candidate slot and replace it.
-  uptr index =
+  
+  uptr index =  
       atomic_load_relaxed(&thr->trace_pos) / sizeof(Event) % kShadowCnt;
   StoreShadow(&shadow_mem[index], cur.raw());
-    
   return false;
+}
+
+ALWAYS_INLINE
+bool CheckLocalReadMap(uptr addr, Shadow cur, RawShadow* shadow_mem,ThreadState* thr,AccessType typ){
+  u64 sids = ctx->read_access_map.Get(addr);
+  if(sids == ReadAccessMap::EMPTY_STATE){
+    return false;
+  }
+  unsigned bitShifted = 0U;
+  for(u64 curSlot = (1ULL<<9)-1ULL;curSlot>0;curSlot<<=sizeof(Sid)*8,bitShifted+=sizeof(Sid)*8){
+    unsigned slotSid = static_cast<unsigned>(sids & curSlot)>>bitShifted;
+
+    if(UNLIKELY(slotSid == ARRAY_SIZE(ctx->slots))){
+      continue;
+    }
+    Shadow old = Shadow(ctx->slots[slotSid].localReadMap.Get(addr));
+    if(UNLIKELY(old.raw() == Shadow::kEmpty))
+      continue;
+    if(old.sid() == cur.sid())
+      continue;
+    if (LIKELY(old.IsBothReadsOrAtomic(typ)))
+      continue;
+    if (LIKELY(thr->clock.Get(old.sid()) >= old.epoch()))
+      continue;
+    DoReportRace(thr, shadow_mem, cur, old, typ);
+    return true;
+  }
+  return false;
+}
+
+ALWAYS_INLINE
+unsigned GetLocalShadows(RawShadow* localShadows, uptr addr){
+  u64 sids = ctx->read_access_map.Get(addr);
+  if(sids == ReadAccessMap::EMPTY_STATE){
+    return 0U;
+  }
+  unsigned bitShifted = 0U;
+  unsigned idx = 0U;
+  for(u64 curSlot = (1ULL<<9)-1ULL;curSlot>0;curSlot<<=sizeof(Sid)*8,bitShifted+=sizeof(Sid)*8){
+    unsigned slotSid = static_cast<unsigned>(sids & curSlot)>>bitShifted;
+
+    if(UNLIKELY(slotSid == ARRAY_SIZE(ctx->slots))){
+      continue;
+    }
+
+    RawShadow raw = ctx->slots[slotSid].localReadMap.Get(addr);
+    if(raw == Shadow::kEmpty)
+      continue;
+    localShadows[idx++] = raw;
+    
+  }
+  return idx;
 }
 
 #  define LOAD_CURRENT_SHADOW(cur, shadow_mem) UNUSED int access = 0, shadow = 0
@@ -323,7 +403,7 @@ bool CheckRaces(ThreadState* thr, RawShadow* shadow_mem, Shadow cur,
   if (UNLIKELY(race_mask))
     goto SHARED;
 
-STORE : {
+STORE: {
   if (typ & kAccessCheckOnly)
     return false;
   // We could also replace different sid's if access is the same,
@@ -433,15 +513,17 @@ ALWAYS_INLINE USED void MemoryAccess(ThreadState* thr, uptr pc, uptr addr,
 
   FastState fast_state = thr->fast_state;
   Shadow cur(fast_state, addr, size, typ);
+  RawShadow localReads[kSidCnt] = {Shadow::kEmpty};
+  unsigned idx = GetLocalShadows(localReads,addr);
 
   LOAD_CURRENT_SHADOW(cur, shadow_mem);
-  if (LIKELY(ContainsSameAccess(shadow_mem, cur, shadow, access, typ)))
+  if (LIKELY(ContainsSameAccess(shadow_mem, localReads, cur, shadow, access, typ)))
     return;
   if (UNLIKELY(fast_state.GetIgnoreBit()))
     return;
   if (!TryTraceMemoryAccess(thr, pc, addr, size, typ))
     return TraceRestartMemoryAccess(thr, pc, addr, size, typ);
-  CheckRaces(thr, shadow_mem, cur, shadow, access, typ);
+  CheckRaces(thr, shadow_mem, localReads, idx, addr, cur, shadow, access, typ);
 }
 
 void MemoryAccess16(ThreadState* thr, uptr pc, uptr addr, AccessType typ);
@@ -462,24 +544,26 @@ ALWAYS_INLINE USED void MemoryAccess16(ThreadState* thr, uptr pc, uptr addr,
   Shadow cur(fast_state, 0, 8, typ);
   RawShadow* shadow_mem = MemToShadow(addr);
   bool traced = false;
+  RawShadow localReads[kSidCnt] = {Shadow::kEmpty};
+  unsigned idx = GetLocalShadows(localReads,addr);
   {
     LOAD_CURRENT_SHADOW(cur, shadow_mem);
-    if (LIKELY(ContainsSameAccess(shadow_mem, cur, shadow, access, typ)))
+    if (LIKELY(ContainsSameAccess(shadow_mem, localReads, cur, shadow, access, typ)))
       goto SECOND;
     if (!TryTraceMemoryAccessRange(thr, pc, addr, size, typ))
       return RestartMemoryAccess16(thr, pc, addr, typ);
     traced = true;
-    if (UNLIKELY(CheckRaces(thr, shadow_mem, cur, shadow, access, typ)))
+    if (UNLIKELY(CheckRaces(thr, shadow_mem, localReads, idx, addr, cur, shadow, access, typ)))
       return;
   }
 SECOND:
   shadow_mem += kShadowCnt;
   LOAD_CURRENT_SHADOW(cur, shadow_mem);
-  if (LIKELY(ContainsSameAccess(shadow_mem, cur, shadow, access, typ)))
+  if (LIKELY(ContainsSameAccess(shadow_mem, localReads, cur, shadow, access, typ)))
     return;
   if (!traced && !TryTraceMemoryAccessRange(thr, pc, addr, size, typ))
     return RestartMemoryAccess16(thr, pc, addr, typ);
-  CheckRaces(thr, shadow_mem, cur, shadow, access, typ);
+  CheckRaces(thr, shadow_mem, localReads, idx, addr, cur, shadow, access, typ);
 }
 
 NOINLINE
@@ -499,15 +583,17 @@ ALWAYS_INLINE USED void UnalignedMemoryAccess(ThreadState* thr, uptr pc,
   RawShadow* shadow_mem = MemToShadow(addr);
   bool traced = false;
   uptr size1 = Min<uptr>(size, RoundUp(addr + 1, kShadowCell) - addr);
+  RawShadow localReads[kSidCnt] = {Shadow::kEmpty};
+  unsigned idx = GetLocalShadows(localReads,addr);
   {
     Shadow cur(fast_state, addr, size1, typ);
     LOAD_CURRENT_SHADOW(cur, shadow_mem);
-    if (LIKELY(ContainsSameAccess(shadow_mem, cur, shadow, access, typ)))
+    if (LIKELY(ContainsSameAccess(shadow_mem, localReads, cur, shadow, access, typ)))
       goto SECOND;
     if (!TryTraceMemoryAccessRange(thr, pc, addr, size, typ))
       return RestartUnalignedMemoryAccess(thr, pc, addr, size, typ);
     traced = true;
-    if (UNLIKELY(CheckRaces(thr, shadow_mem, cur, shadow, access, typ)))
+    if (UNLIKELY(CheckRaces(thr, shadow_mem, localReads, idx, addr, cur, shadow, access, typ)))
       return;
   }
 SECOND:
@@ -517,11 +603,11 @@ SECOND:
   shadow_mem += kShadowCnt;
   Shadow cur(fast_state, 0, size2, typ);
   LOAD_CURRENT_SHADOW(cur, shadow_mem);
-  if (LIKELY(ContainsSameAccess(shadow_mem, cur, shadow, access, typ)))
+  if (LIKELY(ContainsSameAccess(shadow_mem, localReads, cur, shadow, access, typ)))
     return;
   if (!traced && !TryTraceMemoryAccessRange(thr, pc, addr, size, typ))
     return RestartUnalignedMemoryAccess(thr, pc, addr, size, typ);
-  CheckRaces(thr, shadow_mem, cur, shadow, access, typ);
+  CheckRaces(thr, shadow_mem, localReads, idx, addr, cur, shadow, access, typ);
 }
 
 void ShadowSet(RawShadow* p, RawShadow* end, RawShadow v) {
@@ -609,6 +695,8 @@ void MemoryRangeFreed(ThreadState* thr, uptr pc, uptr addr, uptr size) {
   TraceMemoryAccessRange(thr, pc, addr, size, typ);
   RawShadow* shadow_mem = MemToShadow(addr);
   Shadow cur(thr->fast_state, 0, kShadowCell, typ);
+  RawShadow localReads[kSidCnt] = {Shadow::kEmpty};
+  unsigned idx = GetLocalShadows(localReads,addr);
 #if TSAN_VECTORIZE
   const m128 access = _mm_set1_epi32(static_cast<u32>(cur.raw()));
   const m128 freed = _mm_setr_epi32(
@@ -622,7 +710,7 @@ void MemoryRangeFreed(ThreadState* thr, uptr pc, uptr addr, uptr size) {
   }
 #else
   for (; size; size -= kShadowCell, shadow_mem += kShadowCnt) {
-    if (UNLIKELY(CheckRaces(thr, shadow_mem, cur, 0, 0, typ)))
+    if (UNLIKELY(CheckRaces(thr, shadow_mem, localReads, idx, addr, cur, 0, 0, typ)))
       return;
     StoreShadow(&shadow_mem[0], Shadow::FreedMarker());
     StoreShadow(&shadow_mem[1], Shadow::FreedInfo(cur.sid(), cur.epoch()));
@@ -649,12 +737,14 @@ void MemoryRangeImitateWriteOrResetRange(ThreadState* thr, uptr pc, uptr addr,
 }
 
 ALWAYS_INLINE
-bool MemoryAccessRangeOne(ThreadState* thr, RawShadow* shadow_mem, Shadow cur,
+bool MemoryAccessRangeOne(ThreadState* thr, uptr addr, RawShadow* shadow_mem, Shadow cur,
                           AccessType typ) {
   LOAD_CURRENT_SHADOW(cur, shadow_mem);
-  if (LIKELY(ContainsSameAccess(shadow_mem, cur, shadow, access, typ)))
+  RawShadow localReads[kSidCnt] = {Shadow::kEmpty};
+  unsigned idx = GetLocalShadows(localReads,addr);
+  if (LIKELY(ContainsSameAccess(shadow_mem, localReads, cur, shadow, access, typ)))
     return false;
-  return CheckRaces(thr, shadow_mem, cur, shadow, access, typ);
+  return CheckRaces(thr, shadow_mem, localReads, idx, addr, cur, shadow, access, typ);
 }
 
 template <bool is_read>
@@ -721,20 +811,20 @@ void MemoryAccessRangeT(ThreadState* thr, uptr pc, uptr addr, uptr size) {
     uptr size1 = Min(size, RoundUp(addr, kShadowCell) - addr);
     size -= size1;
     Shadow cur(fast_state, addr, size1, typ);
-    if (UNLIKELY(MemoryAccessRangeOne(thr, shadow_mem, cur, typ)))
+    if (UNLIKELY(MemoryAccessRangeOne(thr, addr, shadow_mem, cur, typ)))
       return;
     shadow_mem += kShadowCnt;
   }
   // Handle middle part, if any.
   Shadow cur(fast_state, 0, kShadowCell, typ);
   for (; size >= kShadowCell; size -= kShadowCell, shadow_mem += kShadowCnt) {
-    if (UNLIKELY(MemoryAccessRangeOne(thr, shadow_mem, cur, typ)))
+    if (UNLIKELY(MemoryAccessRangeOne(thr, addr, shadow_mem, cur, typ)))
       return;
   }
   // Handle ending, if any.
   if (UNLIKELY(size)) {
     Shadow cur(fast_state, 0, size, typ);
-    if (UNLIKELY(MemoryAccessRangeOne(thr, shadow_mem, cur, typ)))
+    if (UNLIKELY(MemoryAccessRangeOne(thr, addr, shadow_mem, cur, typ)))
       return;
   }
 }

@@ -8,15 +8,14 @@
 
 namespace __tsan {
 
-LocalReadMap::LocalReadMap(Sid sid):sid_(sid){
-    for (int i = 0; i < kThreadSlotCount; i++) {
-      for (int j = 0; j < kShadowCnt; j++) {
-        // localReadMap_[i][j].key = 0UL;
-        // localReadMap_[i][j].val = Shadow::kEmpty;
-        StoreShadow(&localReadMap_[i][j],Shadow::kEmpty);
-        atomic_store_relaxed(&addressMap_[i][j],0UL);
-      }
+void LocalReadMap::Init(Sid sid){
+  sid_ = sid;
+  for (int i = 0; i < kThreadSlotCount; i++) {
+    for (int j = 0; j < kShadowCnt; j++) {
+      StoreShadow(&localReadMap_[i][j],Shadow::kEmpty);
+      atomic_store_relaxed(&addressMap_[i][j],0UL);
     }
+  }
 }
 
 // We only have one producer here and multiple consumer so we don't need 

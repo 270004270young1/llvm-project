@@ -14,25 +14,25 @@ typedef KeyValPair<atomic_uintptr_t, atomic_uint64_t> Pair;
 
 class ReadAccessMap {
  public:
-  ReadAccessMap();
 
   bool Insert(uptr addr, Sid sid);
   void Remove(uptr addr);
   bool Contain(uptr addr, Sid sid);
   u64 Get(uptr addr);
 
+  ReadAccessMap();
   ReadAccessMap(const ReadAccessMap&) = delete;
   ReadAccessMap(ReadAccessMap&&) = delete;
   ReadAccessMap& operator=(const ReadAccessMap&) = delete;
   ReadAccessMap& operator=(ReadAccessMap&&) = delete;
 
+  static const u64 EMPTY_STATE = ((1ULL << 63) - 1ULL);
+  static const u64 DELETE_STATE = (1ULL << 63) - 1ULL | (1ULL << 63);
+
  private:
   Pair* ReadAccessMap::FindMatchedPair(int index, uptr addr, u8 swapIndex);
 //   Pair* ReadAccessMap::GetEmptyPair(int index, uptr addr);
   bool UpdateCell(Pair* pair, u64 cell, Sid sid);
-
-  static const u64 DELETE_STATE = (1ULL << 63) - 1ULL | (1ULL << 63);
-  static const u64 EMPTY_STATE = ((1ULL << 63) - 1ULL);
 
   Pair readAccessMap_[kReadAccessMapSize][2][kShadowCnt];
   atomic_uint8_t gcTracker_[kReadAccessMapSize];

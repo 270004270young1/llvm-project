@@ -145,6 +145,8 @@ struct alignas(SANITIZER_CACHE_LINE_SIZE) TidSlot {
   atomic_uint32_t raw_epoch;
   ThreadState *thr;
   Vector<TidEpoch> journal;
+  //LocalReadMap is thread-safe so any operation on it doesn't need to acquire mtx.
+  LocalReadMap localReadMap;
   INode node;
 
   Epoch epoch() const {

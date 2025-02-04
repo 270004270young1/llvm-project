@@ -108,6 +108,8 @@ const uptr kLocalReadMapSize = 1027;
 // Read access map size for local read tracking.
 const uptr kReadAccessMapSize = 10027;
 
+const unsigned kSidCnt = sizeof(u64)/sizeof(Sid);
+
 #if TSAN_NO_HISTORY
 const bool kCollectHistory = false;
 #else
