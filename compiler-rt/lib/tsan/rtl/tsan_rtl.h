@@ -34,6 +34,7 @@
 #include "sanitizer_common/sanitizer_suppressions.h"
 #include "sanitizer_common/sanitizer_thread_registry.h"
 #include "sanitizer_common/sanitizer_vector.h"
+#include "sanitizer_common/sanitizer_hash.h"
 #include "tsan_defs.h"
 #include "tsan_flags.h"
 #include "tsan_ignoreset.h"
@@ -802,6 +803,13 @@ void FuncExit(ThreadState *thr) {
   DCHECK_LT(thr->shadow_stack_pos, thr->shadow_stack_end);
 #endif
   thr->shadow_stack_pos--;
+}
+
+template<uptr kSize>
+inline int CalcHash(uptr addr) {
+  MurMur2Hash64Builder hasher;
+  hasher.add(static_cast<u64>(addr));
+  return static_cast<uptr>(hasher.get()) % kSize;
 }
 
 #if !SANITIZER_GO

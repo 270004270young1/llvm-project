@@ -17,7 +17,7 @@ TEST(LocalReadMap,BasicGetInsert){
     Shadow shadow(fs,addr,size,kAccessRead);
     localReadMap.Insert(addr,shadow.raw());
     u32 expected = static_cast<u32>(shadow.raw());
-    EXPECT_EQ(static_cast<u32>(localReadMap.Get(addr)),0U);
+    EXPECT_EQ(static_cast<u32>(localReadMap.Get(addr)),expected);
 }
 
 }

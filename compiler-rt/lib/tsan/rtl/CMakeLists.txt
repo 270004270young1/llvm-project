@@ -49,6 +49,8 @@ set(TSAN_SOURCES
   tsan_symbolize.cpp
   tsan_sync.cpp
   tsan_vector_clock.cpp
+  tsan_local_read_map.cpp
+  tsan_read_access_map.cpp
   )
 
 set(TSAN_CXX_SOURCES
@@ -106,6 +108,8 @@ set(TSAN_HEADERS
   tsan_sync.h
   tsan_trace.h
   tsan_vector_clock.h
+  tsan_local_read_map.h
+  tsan_read_access_map.h
   )
 
 set(TSAN_RUNTIME_LIBRARIES)
