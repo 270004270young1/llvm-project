@@ -38,6 +38,11 @@ enum memory_order {
 #endif
 };
 
+struct atomic_bool{
+  typedef bool Type;
+  volatile Type val_dont_use;
+};
+
 struct atomic_uint8_t {
   typedef u8 Type;
   volatile Type val_dont_use;
@@ -89,8 +94,18 @@ inline typename T::Type atomic_load_relaxed(const volatile T *a) {
 }
 
 template<typename T>
+inline typename T::Type atomic_load_acquire(const volatile T *a) {
+  return atomic_load(a, memory_order_acquire);
+}
+
+template<typename T>
 inline void atomic_store_relaxed(volatile T *a, typename T::Type v) {
   atomic_store(a, v, memory_order_relaxed);
+}
+
+template<typename T>
+inline void atomic_store_release(volatile T *a, typename T::Type v) {
+  atomic_store(a, v, memory_order_release);
 }
 
 }  // namespace __sanitizer
