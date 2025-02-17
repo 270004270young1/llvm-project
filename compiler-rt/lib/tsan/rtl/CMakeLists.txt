@@ -49,7 +49,6 @@ set(TSAN_SOURCES
   tsan_symbolize.cpp
   tsan_sync.cpp
   tsan_vector_clock.cpp
-  tsan_local_read_map.cpp
   tsan_read_access_map.cpp
   )
 

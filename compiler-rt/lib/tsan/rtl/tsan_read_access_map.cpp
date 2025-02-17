@@ -154,7 +154,7 @@ bool ReadAccessMap::Contain(uptr addr, Sid sid) {
         return true;
     }
   }
-  return false;
+  return true;
 }
 
 u64 ReadAccessMap::Get(uptr addr) {

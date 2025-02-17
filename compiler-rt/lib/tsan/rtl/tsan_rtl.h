@@ -48,6 +48,7 @@
 #include "tsan_sync.h"
 #include "tsan_trace.h"
 #include "tsan_vector_clock.h"
+#include "tsan_read_access_map.h"
 
 #if SANITIZER_WORDSIZE != 64
 # error "ThreadSanitizer is supported only on 64-bit platforms"
@@ -379,6 +380,9 @@ struct Context {
   uptr mapped_shadow_begin;
   uptr mapped_shadow_end;
 #endif
+
+  ReadAccessMap read_access_map;
+
 };
 
 extern Context *ctx;  // The one and the only global runtime context.
