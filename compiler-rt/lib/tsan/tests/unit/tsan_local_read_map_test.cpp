@@ -26,7 +26,7 @@ TEST(LocalReadMap, Overwrite){
     Epoch epoch = static_cast<Epoch>(22);
     uptr addr1 = static_cast<uptr>(20);
     uptr addr2 = static_cast<uptr>(31);
-    uptr addr3 = static_cast<uptr>(42);
+    uptr addr3 = static_cast<uptr>(32);
     u32 size = static_cast<u32>(4);
     localReadMap.Init(sid);
     

@@ -33,8 +33,8 @@ class LocalReadMap {
   }
 
   bool Insert(uptr addr, RawShadow rawShadow){
-    const int index = CalcHash<MapSize>(addr);
-
+    const unsigned index = CalcHash<MapSize>(addr);
+    // Printf("This is address: %lu\n",addr);
     const int pos = FindMatchedOrEmptySlot(index,addr);
     if(pos == -1)
       return false;
@@ -45,7 +45,7 @@ class LocalReadMap {
   }
   
   RawShadow Get(uptr addr){
-    const int index = CalcHash<MapSize>(addr);
+    const unsigned index = CalcHash<MapSize>(addr);
     for(int i=0;i<ShadowCnt;i++){
       if(static_cast<uptr>(atomic_load_acquire(&addressMap_[index][i])) == addr){
         return LoadShadow(&localReadMap_[index][i]);
@@ -80,7 +80,7 @@ class LocalReadMap {
   }
   
   int FindMatchedOrEmptySlot(int index, uptr addr){
-    uptr keys[ShadowCnt] = {0UL};
+    uptr keys[ShadowCnt];
     for(int i=0;i<ShadowCnt;i++){
       keys[i] = static_cast<uptr>(atomic_load_relaxed(&addressMap_[index][i]));
       if(keys[i] == addr || keys[i] == 0UL){

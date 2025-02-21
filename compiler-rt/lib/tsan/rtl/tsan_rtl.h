@@ -381,7 +381,7 @@ struct Context {
   uptr mapped_shadow_end;
 #endif
 
-  ReadAccessMap read_access_map;
+  // ReadAccessMap<static_cast<unsigned>(kReadAccessMapSize),static_cast<unsigned>(kShadowCnt)> read_access_map;
 
 };
 
@@ -809,8 +809,8 @@ void FuncExit(ThreadState *thr) {
   thr->shadow_stack_pos--;
 }
 
-template<uptr kSize>
-inline int CalcHash(uptr addr) {
+template<unsigned kSize>
+inline unsigned CalcHash(uptr addr) {
   MurMur2Hash64Builder hasher;
   hasher.add(static_cast<u64>(addr));
   return static_cast<uptr>(hasher.get()) % kSize;

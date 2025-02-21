@@ -103,13 +103,13 @@ const uptr kMetaShadowSize = 4;
 const uptr kCompressedAddrBits = 44;
 
 // TidSlot local read access buffer size
-// const uptr kLocalReadMapSize = 1027;
-const uptr kLocalReadMapSize = 3;
+const uptr kLocalReadMapSize = 1027;
+// const uptr kLocalReadMapSize = 3;
 
 
 // Read access map size for local read tracking.
-// const uptr kReadAccessMapSize = 10027;
-const uptr kReadAccessMapSize = 7;
+const uptr kReadAccessMapSize = 10027;
+// const uptr kReadAccessMapSize = 7;
 
 
 const unsigned kSidCnt = sizeof(u64)/sizeof(Sid);
