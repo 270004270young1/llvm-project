@@ -68,20 +68,25 @@ class LocalReadMap {
     bool stored = false;
     for(unsigned i=0;i<ShadowCnt;i++){
 
-      if(isOutdated[i]){
+      if(!isOutdated[i]){
+        atomic_store_relaxed(&localReadMap_[index][!swapIndex][i],shadows[i]);
+        atomic_store_released(&addressMap_[index][!swapIndex][i],keys[i]);
+      }else{
+        
         if(!stored){
-          atomic_store_relaxed(&localReadMap_[index][!swapIndex][i],rawShadow;
+          atomic_store_relaxed(&localReadMap_[index][!swapIndex][i],rawShadow);
           atomic_store_released(&addressMap_[index][!swapIndex][i],addr);
           stored = true;
         }else{
           atomic_store_relaxed(&localReadMap_[index][!swapIndex][i],Shadow::kEmpty);
           atomic_store_released(&addressMap_[index][!swapIndex][i],0UL);
         }
-        continue;
+        
       }
+      
+      atomic_store_relaxed(&localReadMap_[index][swapIndex][i],Shadow::FreedMarker);
+      atomic_store_released(&addressMap_[index][swapIndex][i],0UL);
 
-      atomic_store_relaxed(&localReadMap_[index][!swapIndex][i],shadows[i]);
-      atomic_store_released(&addressMap_[index][!swapIndex][i],keys[i]);
 
     }
 
@@ -94,8 +99,12 @@ class LocalReadMap {
     unsigned swapIndex = atomic_load_acquire(&swapIndex[index]);
 
     for(int i=0;i<ShadowCnt;i++){
-      if(static_cast<uptr>(atomic_load_acquire(&addressMap_[index][swapIndex][i])) == addr){
-        return LoadShadow(&localReadMap_[index][swapIndex][i]);
+      if(static_cast<uptr>(atomic_load_relaxed(&addressMap_[index][swapIndex][i])) == addr){
+        RawShadow rawShadow = LoadShadow(&localReadMap_[index][swapIndex][i]);
+        if(rawShadow == Shadow::FreedMarker){
+          rawShadow = atomic_load_relaxed(addressMap_[index][!swapIndex][i]) == addr ? atomic_load_relaxed(&localReadMap_[index][!swapIndex][i]) : rawShadow;
+        }
+        return rawShadow == Shadow::FreedMarker ? Shadow::kEmpty : rawShadow;
       }
     }
     
