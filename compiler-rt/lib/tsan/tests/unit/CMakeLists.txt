@@ -9,6 +9,8 @@ set(TSAN_UNIT_TEST_SOURCES
   tsan_trace_test.cpp
   tsan_unit_test_main.cpp
   tsan_vector_clock_test.cpp
+  tsan_local_read_map_test.cpp
+  tsan_read_access_map_test.cpp
   )
 
 add_tsan_unittest(TsanUnitTest

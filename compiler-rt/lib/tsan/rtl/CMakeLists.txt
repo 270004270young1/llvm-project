@@ -106,6 +106,8 @@ set(TSAN_HEADERS
   tsan_sync.h
   tsan_trace.h
   tsan_vector_clock.h
+  tsan_local_read_map.h
+  tsan_read_access_map.h
   )
 
 set(TSAN_RUNTIME_LIBRARIES)
