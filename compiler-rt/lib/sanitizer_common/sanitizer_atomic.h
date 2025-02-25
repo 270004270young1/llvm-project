@@ -38,7 +38,7 @@ enum memory_order {
 #endif
 };
 
-struct atomic_bool{
+struct atomic_bool_t{
   typedef bool Type;
   volatile Type val_dont_use;
 };

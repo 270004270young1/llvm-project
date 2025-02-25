@@ -35,7 +35,7 @@ class ReadAccessMap {
         atomic_store_relaxed(&readAccessMap_[i][0][j].val, EMPTY_STATE);
         atomic_store_relaxed(&readAccessMap_[i][1][j].val, EMPTY_STATE);
       }
-      atomic_store_relaxed(&gcTracker_[i], 0U);
+      atomic_store_released(&gcTracker_[i], 0U);
     }
   }
 
@@ -45,8 +45,8 @@ class ReadAccessMap {
 
     Pair* pairs = readAccessMap_[index][swapIndex];
     for (int i = 0; i < ShadowCnt; i++) {
-      const uptr key = static_cast<uptr>(atomic_load_acquire(&pairs[i].key));
       const u64 cell = static_cast<u64>(atomic_load_acquire(&pairs[i].val));
+      const uptr key = static_cast<uptr>(atomic_load_relaxed(&pairs[i].key));
 
       if(key == addr && cell == DELETE_STATE)
         return false;
@@ -54,13 +54,13 @@ class ReadAccessMap {
       if(key == addr){
         return UpdateCell(&pairs[i], cell, sid);
       }else if(key == 0UL){
-        uptr zero = 0UL;
-        if (atomic_compare_exchange_strong(&pairs[i].key, &zero, addr,
+        uptr expected = 0UL;
+        if (atomic_compare_exchange_strong(&pairs[i].key, &expected, addr,
                                           memory_order_acq_rel)) {
           return UpdateCell(&pairs[i], cell, sid);
         }
 
-        if (static_cast<uptr>(atomic_load_acquire(&pairs[i].key)) == addr) {
+        if (expected == addr) {
           return UpdateCell(&pairs[i], cell, sid);
         }
 
@@ -81,26 +81,31 @@ class ReadAccessMap {
     const bool gcInProgress = gcTracker & 1U;
     Pair* curPair = readAccessMap_[index][swapIndex];
     Pair* swapPair = readAccessMap_[index][!swapIndex];
+
+    uptr curKeys[ShadowCnt] = {0UL};
+    u64 curVals[ShadowCnt] = {0ULL};
     for (unsigned i = 0; i < ShadowCnt; i++) {
-      if (static_cast<uptr>(atomic_load_acquire(&curPair[i].key)) == addr && atomic_load_acquire(&curPair[i].val) != DELETE_STATE){
+      curKeys[i] = atomic_load_acquire(&curPair[i].val);
+      curVals[i] = atomic_load_relaxed(&curPair[i].key);
+      if (curKeys[i] == addr && curVals[i] != DELETE_STATE){
         atomic_store_release(&curPair[i].val, DELETE_STATE);
         break;
       }
     }
 
     for (unsigned i = 0; i < ShadowCnt; i++) {
-      if (static_cast<uptr>(atomic_load_acquire(&curPair[i].key)) == 0UL)
+      if (curKeys[i] == 0UL)
         return;
     }
 
     if (gcInProgress ||
         !atomic_compare_exchange_strong(&gcTracker_[index], &gcTracker,
-                                        gcTracker | 1U, memory_order_acquire))
+                                        gcTracker | 1U, memory_order_acq_rel))
       return;
 
     //Start GC
     for (unsigned i = 0; i < ShadowCnt; i++) {
-      u64 curVal = atomic_load_acquire(&curPair[i].val);
+      u64 curVal = curVals[i];
       if (curVal == DELETE_STATE) {
         atomic_store_relaxed(&swapPair[i].key, 0UL);
         atomic_store_release(&swapPair[i].val, EMPTY_STATE);
@@ -113,14 +118,14 @@ class ReadAccessMap {
       //   atomic_store_release(&gcTracker_[index], gcTracker);
       //   return atomic_load_acquire(&gcTracker_[index]);
       // }
-      uptr curKey = atomic_load_acquire(&curPair[i].key);
+      uptr curKey = keys[i];
       atomic_store_relaxed(&swapPair[i].key,curKey);
-      atomic_store_relaxed(&swapPair[i].val,curVal);
+      atomic_store_released(&swapPair[i].val,curVal);
 
       // memory_order_release is required to ensure the previous CAS won't get
       // reordered after this CAS.
       if (!atomic_compare_exchange_strong(&curPair[i].val, &curVal,
-                                          DELETE_STATE, memory_order_release)) {
+                                          DELETE_STATE, memory_order_acq_rel)) {
         atomic_store_release(&gcTracker_[index], gcTracker);
         return;
       }
@@ -130,12 +135,13 @@ class ReadAccessMap {
   }
 
   bool Contain(uptr addr, Sid sid){
-    const unsigned index = CalcHash<MapSize>(addr);
-    const u8 swapIndex = atomic_load_acquire(&gcTracker_[index]) & 2U ? 1 : 0;
+    // const unsigned index = CalcHash<MapSize>(addr);
+    // const u8 swapIndex = atomic_load_acquire(&gcTracker_[index]) & 2U ? 1 : 0;
 
-    if (Pair* pair = FindMatchedPair(index, addr, swapIndex)) {
-      const u64 cell = atomic_load_acquire(&pair->val);
-      if (cell == DELETE_STATE || cell == EMPTY_STATE)
+    u64 cell = Get(addr);
+    for(unsigned i=0;i<ShadowCnt;i++) {
+      // const u64 cell = atomic_load_acquire(&pair->val);
+      if (cell == EMPTY_STATE)
         return false;
 
       for (u64 curSlot = (1ULL << 8) - 1ULL, sidSlot = static_cast<u64>(sid);
@@ -153,20 +159,19 @@ class ReadAccessMap {
     const u8 swapIndex = atomic_load_acquire(&gcTracker_[index]) & 2U ? 1 : 0;
 
     for (unsigned i = 0; i < ShadowCnt; i++) {
-      uptr key = atomic_load_acquire(&readAccessMap_[index][swapIndex][i].key);
+      u64 cell = atomic_load_acquire(&readAccessMap_[index][swapIndex][i].val);
+      uptr key = atomic_load_relaxed(&readAccessMap_[index][swapIndex][i].key);
       if (key != addr) {
         continue;
       }
 
-      u64 cell = atomic_load_acquire(&readAccessMap_[index][swapIndex]
-      [i].val);
       if (cell != DELETE_STATE) {
         return cell;
       }
 
-      if (atomic_load_acquire(&readAccessMap_[index][!swapIndex][i].key) ==
+      cell = atomic_load_acquire(&readAccessMap_[index][!swapIndex][i].val);
+      if (atomic_load_relaxed(&readAccessMap_[index][!swapIndex][i].key) ==
           addr) {
-        cell = atomic_load_acquire(&readAccessMap_[index][!swapIndex][i].val);
         return cell == DELETE_STATE ? EMPTY_STATE : cell;
       }
     }
@@ -206,7 +211,7 @@ class ReadAccessMap {
         }
         curSlot |= sidSlot;
         return atomic_compare_exchange_strong(&pair->val, &cell, curSlot,
-                                              memory_order_release);
+                                              memory_order_acq_rel);
         // return atomic_compare_exchange_strong(&pair->val, &cell, curSlot,
         //                                       memory_order_release);
       }

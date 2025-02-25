@@ -164,4 +164,29 @@ TEST(ReadAccessMap, TestGC){
 
 }
 
+TEST(ReadAccessMap, TestExceedShadowCnt){
+  TestReadAccessMap<1U, 1U> readAccessMap;
+  uptr addr1 = 31UL;
+  uptr addr2 = 32UL;
+  Sid sid1 = static_cast<Sid>(1);
+
+  EXPECT_EQ(readAccessMap.Insert(addr1,sid1),true);
+  EXPECT_EQ(readAccessMap.Insert(addr2,sid1),false);
+
+}
+
+TEST(ReadAccessMap, TestExceedSidSlot){
+  TestReadAccessMap<1U, 1U> readAccessMap;
+  uptr addr1 = 31UL;
+  for(int i=0;i<size;i++){
+    EXPECT_EQ(readAccessMap.Insert(addr1,static_cast<Sid>(i)),true);
+  }
+
+  for(int i=0;i<size;i++){
+    EXPECT_EQ(readAccessMap.Insert(addr1,static_cast<Sid>(i)),true);
+  }
+  EXPECT_EQ(readAccessMap.Insert(addr1,static_cast<Sid>(size+1)),false);
+
+}
+
 }  // namespace __tsan

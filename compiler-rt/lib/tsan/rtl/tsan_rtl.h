@@ -381,7 +381,7 @@ struct Context {
   uptr mapped_shadow_end;
 #endif
 
-  // ReadAccessMap<static_cast<unsigned>(kReadAccessMapSize),static_cast<unsigned>(kShadowCnt)> read_access_map;
+  ReadAccessMap<kReadAccessMapSize,kShadowCnt> read_access_map;
 
 };
 
