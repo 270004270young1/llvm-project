@@ -38,7 +38,7 @@ class LocalReadMap {
 
   bool Insert(uptr addr, RawShadow rawShadow){
     const unsigned index = CalcHash<MapSize>(addr);
-    unsigned swapIndex = atomic_load_relaxed(&swapIndex[index]);
+    unsigned swapIndex = atomic_load_relaxed(&swapIndex_[index]);
     uptr keys[ShadowCnt] = {0UL};
     RawShadow shadows[ShadowCnt] = {Shadow::kEmpty};
     for(unsigned i=0;i<ShadowCnt;i++){
@@ -96,7 +96,10 @@ class LocalReadMap {
   
   RawShadow Get(uptr addr){
     const unsigned index = CalcHash<MapSize>(addr);
-    unsigned swapIndex = atomic_load_acquire(&swapIndex[index]);
+    bool expected = false;
+    //The purpose of this compare_exchange is to force the reader threads to read the latest value written by the thread of the map owner and build release-acquire relation with the latest update.
+    atomic_compare_exchange_strong(&swapIndex_[index],&expected,0,memory_order_acquire);
+    unsigned swapIndex = expected;
 
     for(int i=0;i<ShadowCnt;i++){
       if(static_cast<uptr>(atomic_load_relaxed(&addressMap_[index][swapIndex][i])) == addr){
@@ -114,49 +117,49 @@ class LocalReadMap {
 
  private:
   
-  int FindEmptySlot(int index){
-    for (int i = 0; i < ShadowCnt; i++) {
-      RawShadow oldShadow = LoadShadow(&localReadMap_[index][i]);
-      if (oldShadow == Shadow::kEmpty) {
-        return i;
-      }
-    }
+  // int FindEmptySlot(int index){
+  //   for (int i = 0; i < ShadowCnt; i++) {
+  //     RawShadow oldShadow = LoadShadow(&localReadMap_[index][i]);
+  //     if (oldShadow == Shadow::kEmpty) {
+  //       return i;
+  //     }
+  //   }
 
-    return -1;
-  }
+  //   return -1;
+  // }
  
-  int FindMatchedSlot(int index, uptr addr){
-      for (int i = 0; i < ShadowCnt; i++) {
-        if (static_cast<uptr>(atomic_load_relaxed(&addressMap_[index][i])) == addr) {
-          return i;
-        }
-      }
+  // int FindMatchedSlot(int index, uptr addr){
+  //     for (int i = 0; i < ShadowCnt; i++) {
+  //       if (static_cast<uptr>(atomic_load_relaxed(&addressMap_[index][i])) == addr) {
+  //         return i;
+  //       }
+  //     }
 
-      return -1;
-  }
+  //     return -1;
+  // }
   
-  int FindMatchedOrEmptySlot(unsigned index, unsigned swapIndex, uptr addr){
-    uptr keys[ShadowCnt];
-    for(int i=0;i<ShadowCnt;i++){
-      keys[i] = static_cast<uptr>(atomic_load_relaxed(&addressMap_[index][swapIndex][i]));
-      if(keys[i] == addr || keys[i] == 0UL){
-        return i;
-      }
-    }
+  // int FindMatchedOrEmptySlot(unsigned index, unsigned swapIndex, uptr addr){
+  //   uptr keys[ShadowCnt];
+  //   for(int i=0;i<ShadowCnt;i++){
+  //     keys[i] = static_cast<uptr>(atomic_load_relaxed(&addressMap_[index][swapIndex][i]));
+  //     if(keys[i] == addr || keys[i] == 0UL){
+  //       return i;
+  //     }
+  //   }
 
-    for(int i=0;i<ShadowCnt;i++){
-      uptr loadedAddr = keys[i];
+  //   for(int i=0;i<ShadowCnt;i++){
+  //     uptr loadedAddr = keys[i];
 
-      if(ctx->read_access_map.Contain(loadedAddr,sid_)){
-        continue;
-      }
-      // atomic_compare_exchange_strong(&addressMap_[index][swapIndex][i],&loadedAddr,0UL,memory_order_acquire);
+  //     if(ctx->read_access_map.Contain(loadedAddr,sid_)){
+  //       continue;
+  //     }
+  //     // atomic_compare_exchange_strong(&addressMap_[index][swapIndex][i],&loadedAddr,0UL,memory_order_acquire);
 
-      return i;
-    }
+  //     return i;
+  //   }
 
-    return -1;
-  }
+  //   return -1;
+  // }
 
   Sid sid_;
   VECTOR_ALIGNED RawShadow localReadMap_[MapSize][2][ShadowCnt];
