@@ -247,7 +247,7 @@ class ReadAccessMap {
   atomic_uint8_t gcTracker_[MapSize];
 };
 
-inline ReadAccessMap<kReadAccessMapSize, kShadowCnt> read_access_map;
+extern ReadAccessMap<kReadAccessMapSize, kShadowCnt> read_access_map;
 
 
 }  // namespace __tsan
