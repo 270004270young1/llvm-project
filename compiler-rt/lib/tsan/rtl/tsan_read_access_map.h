@@ -2,12 +2,11 @@
 #define TSAN_READ_ACCESS_MAP_H
 
 #include "tsan_defs.h"
-#include "tsan_rtl.h"
+#include "sanitizer_common/sanitizer_hash.h"
 
 namespace __tsan {
 
-template<unsigned kSize>
-inline unsigned CalcHash(uptr addr);
+
 
 template <typename Key, typename Val>
 struct KeyValPair {
@@ -35,18 +34,21 @@ class ReadAccessMap {
         atomic_store_relaxed(&readAccessMap_[i][0][j].val, EMPTY_STATE);
         atomic_store_relaxed(&readAccessMap_[i][1][j].val, EMPTY_STATE);
       }
-      atomic_store_relaxed(&gcTracker_[i], 0U);
+      atomic_store_release(&gcTracker_[i], 0U);
     }
   }
 
   bool Insert(uptr addr, Sid sid){
-    const unsigned index = CalcHash<MapSize>(addr);
-    const u8 swapIndex = atomic_load_acquire(&gcTracker_[index]) & 2U ? 1 : 0;
+    const unsigned index = CalcHash(addr);
+    u8 gcTracker = 0U;
+    //Force this thread to acquire the latest value of gcTracker_[index]
+    atomic_compare_exchange_strong(&gcTracker_[index],&gcTracker,0U,memory_order_acquire);
+    const u8 swapIndex = gcTracker & 2U ? 1 : 0;
 
     Pair* pairs = readAccessMap_[index][swapIndex];
     for (int i = 0; i < ShadowCnt; i++) {
-      const uptr key = static_cast<uptr>(atomic_load_acquire(&pairs[i].key));
-      const u64 cell = static_cast<u64>(atomic_load_acquire(&pairs[i].val));
+      const u64 cell = atomic_load_acquire(&pairs[i].val);
+      const uptr key = atomic_load_relaxed(&pairs[i].key);
 
       if(key == addr && cell == DELETE_STATE)
         return false;
@@ -54,16 +56,15 @@ class ReadAccessMap {
       if(key == addr){
         return UpdateCell(&pairs[i], cell, sid);
       }else if(key == 0UL){
-        uptr zero = 0UL;
-        if (atomic_compare_exchange_strong(&pairs[i].key, &zero, addr,
+        uptr expected = 0UL;
+        if (atomic_compare_exchange_strong(&pairs[i].key, &expected, addr,
                                           memory_order_acq_rel)) {
           return UpdateCell(&pairs[i], cell, sid);
         }
 
-        if (static_cast<uptr>(atomic_load_acquire(&pairs[i].key)) == addr) {
+        if (expected == addr) {
           return UpdateCell(&pairs[i], cell, sid);
         }
-
       }
 
       // uptr zero = 0UL;
@@ -75,32 +76,55 @@ class ReadAccessMap {
   }
 
   void Remove(uptr addr){
-    const unsigned index = CalcHash<MapSize>(addr);
-    u8 gcTracker = atomic_load_acquire(&gcTracker_[index]);
+    const unsigned index = CalcHash(addr);
+    u8 gcTracker = 0U;
+    //Force this thread to acquire the latest value of gcTracker_[index]
+    atomic_compare_exchange_strong(&gcTracker_[index],&gcTracker,0U,memory_order_acquire);
     const u8 swapIndex = gcTracker & 2U ? 1 : 0;
     const bool gcInProgress = gcTracker & 1U;
     Pair* curPair = readAccessMap_[index][swapIndex];
     Pair* swapPair = readAccessMap_[index][!swapIndex];
+    // for (unsigned i = 0; i < ShadowCnt; i++) {
+    //   if (static_cast<uptr>(atomic_load_acquire(&curPair[i].key)) == addr && atomic_load_acquire(&curPair[i].val) != DELETE_STATE){
+    //     atomic_store_release(&curPair[i].val, DELETE_STATE);
+    //     break;
+    //   }
+    // }
+    uptr curKeys[ShadowCnt] = {0UL};
+    u64 curVals[ShadowCnt] = {0ULL};
+    bool deleted = false;
     for (unsigned i = 0; i < ShadowCnt; i++) {
-      if (static_cast<uptr>(atomic_load_acquire(&curPair[i].key)) == addr && atomic_load_acquire(&curPair[i].val) != DELETE_STATE){
+      curKeys[i] = atomic_load_acquire(&curPair[i].val);
+      curVals[i] = atomic_load_relaxed(&curPair[i].key);
+      if (!deleted && curKeys[i] == addr){
         atomic_store_release(&curPair[i].val, DELETE_STATE);
-        break;
+        deleted = true;
       }
     }
 
+    // for (unsigned i = 0; i < ShadowCnt; i++) {
+    //   if (static_cast<uptr>(atomic_load_acquire(&curPair[i].key)) == 0UL)
+    //     return;
+    // }
+    bool hasDeletedState = deleted;
     for (unsigned i = 0; i < ShadowCnt; i++) {
-      if (static_cast<uptr>(atomic_load_acquire(&curPair[i].key)) == 0UL)
+      if (curKeys[i] == 0UL)
         return;
+      hasDeletedState |= curVals[i] == DELETE_STATE;
     }
+
+    if(!hasDeletedState)
+      return;
 
     if (gcInProgress ||
         !atomic_compare_exchange_strong(&gcTracker_[index], &gcTracker,
-                                        gcTracker | 1U, memory_order_acquire))
+                                        gcTracker | 1U, memory_order_acq_rel))
       return;
 
     //Start GC
     for (unsigned i = 0; i < ShadowCnt; i++) {
-      u64 curVal = atomic_load_acquire(&curPair[i].val);
+      u64 curVal = curVals[i];
+      uptr curKey = curKeys[i];
       if (curVal == DELETE_STATE) {
         atomic_store_relaxed(&swapPair[i].key, 0UL);
         atomic_store_release(&swapPair[i].val, EMPTY_STATE);
@@ -113,14 +137,13 @@ class ReadAccessMap {
       //   atomic_store_release(&gcTracker_[index], gcTracker);
       //   return atomic_load_acquire(&gcTracker_[index]);
       // }
-      uptr curKey = atomic_load_acquire(&curPair[i].key);
       atomic_store_relaxed(&swapPair[i].key,curKey);
-      atomic_store_relaxed(&swapPair[i].val,curVal);
+      atomic_store_release(&swapPair[i].val,curVal);
 
       // memory_order_release is required to ensure the previous CAS won't get
       // reordered after this CAS.
       if (!atomic_compare_exchange_strong(&curPair[i].val, &curVal,
-                                          DELETE_STATE, memory_order_release)) {
+                                          DELETE_STATE, memory_order_acq_rel)) {
         atomic_store_release(&gcTracker_[index], gcTracker);
         return;
       }
@@ -130,7 +153,7 @@ class ReadAccessMap {
   }
 
   bool Contain(uptr addr, Sid sid){
-    const unsigned index = CalcHash<MapSize>(addr);
+    const unsigned index = CalcHash(addr);
     const u8 swapIndex = atomic_load_acquire(&gcTracker_[index]) & 2U ? 1 : 0;
 
     if (Pair* pair = FindMatchedPair(index, addr, swapIndex)) {
@@ -149,7 +172,7 @@ class ReadAccessMap {
   }
 
   u64 Get(uptr addr){
-    const unsigned index = CalcHash<MapSize>(addr);
+    const unsigned index = CalcHash(addr);
     const u8 swapIndex = atomic_load_acquire(&gcTracker_[index]) & 2U ? 1 : 0;
 
     for (unsigned i = 0; i < ShadowCnt; i++) {
@@ -214,9 +237,18 @@ class ReadAccessMap {
     return false;
   }
 
+  unsigned CalcHash(uptr addr){
+    MurMur2Hash64Builder hasher;
+    hasher.add(static_cast<u64>(addr));
+    return static_cast<uptr>(hasher.get()) % MapSize;
+  }
+
   Pair readAccessMap_[MapSize][2][ShadowCnt];
   atomic_uint8_t gcTracker_[MapSize];
 };
+
+inline ReadAccessMap<kReadAccessMapSize, kShadowCnt> read_access_map;
+
 
 }  // namespace __tsan
 

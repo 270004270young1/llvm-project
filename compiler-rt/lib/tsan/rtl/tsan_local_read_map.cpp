@@ -1,110 +1,104 @@
 // #include "tsan_local_read_map.h"
-
-// #include "tsan_platform.h"
-// #include "tsan_rtl.h"
 // #include "sanitizer_common/sanitizer_atomic.h"
+// #include "tsan_rtl.h"
 
-// //Constraint: Allow multiple reader but write and remove operation can only be performed by the thread which owns this LocalReadMap. Add() and Remove() operations are thread-safe under this constraint.
-
-// namespace __tsan {
+// namespace __tsan{
 
 // template<unsigned MapSize, unsigned ShadowCnt>
-// void LocalReadMap<MapSize, ShadowCnt>::Init(Sid sid){
-//   sid_ = sid;
-//   for (int i = 0; i < MapSize; i++) {
-//     for (int j = 0; j < ShadowCnt; j++) {
-//       StoreShadow(&localReadMap_[i][j],Shadow::kEmpty);
-//       atomic_store_relaxed(&addressMap_[i][j],0UL);
+// void LocalReadMap<MapSize,ShadowCnt>::Init(Sid sid){
+//     sid_ = sid;
+//     for (int i = 0; i < MapSize; i++) {
+//       for (int j = 0; j < ShadowCnt; j++) {
+//         StoreShadow(&localReadMap_[i][0][j],Shadow::kEmpty);
+//         StoreShadow(&localReadMap_[i][1][j],Shadow::kEmpty);
+//         atomic_store_relaxed(&addressMap_[i][0][j],0UL);
+//         atomic_store_relaxed(&addressMap_[i][1][j],0UL);
+
+//       }
+//       atomic_store_release(&swapIndex_[i],false);
 //     }
-//   }
-// }
-
-// // We only have one producer here and multiple consumer so we don't need 
-// // to worry about the multiple threads write to the same addressMap and
-// // localReadMap
-// template<unsigned MapSize, unsigned ShadowCnt>
-// bool LocalReadMap<MapSize, ShadowCnt>::Insert(uptr addr, RawShadow rawShadow) {
-//   const int index = CalcHash<MapSize>(addr);
-
-//   const int pos = FindMatchedOrEmptySlot(index,addr);
-//   if(pos == -1)
-//     return false;
-//   StoreShadow(&localReadMap_[index][pos],rawShadow);
-//   atomic_store_release(&addressMap_[index][pos],addr);
-
-//   return true;
-// }
-
-// // void LocalReadMap::Remove(uptr addr) {
-// //   const int index = CalcHash<kLocalReadMapSize>(addr);
-// //   const int pos = FindMatchedSlot(index,addr);
-// //   if(pos == -1)
-// //     return;
-
-// //   StoreShadow(&localReadMap_[index][pos],Shadow::kEmpty);
-// //   atomic_store_release(&addressMap_[index][pos],0UL);
-// // }
-// template<unsigned MapSize, unsigned ShadowCnt>
-// RawShadow LocalReadMap<MapSize, ShadowCnt>::Get(uptr addr){
-
-//   const int index = CalcHash<MapSize>(addr);
-//   for(int i=0;i<MapSize;i++){
-//     if(static_cast<uptr>(atomic_load_acquire(&addressMap_[index][i])) == addr){
-//       return LoadShadow(&localReadMap_[index][i]);
-//     }
-//   }
-  
-//   return Shadow::kEmpty;
 // }
 
 // template<unsigned MapSize, unsigned ShadowCnt>
-// int LocalReadMap<MapSize, ShadowCnt>::FindEmptySlot(int index) {
-//   for (int i = 0; i < ShadowCnt; i++) {
-//     RawShadow oldShadow = LoadShadow(&localReadMap_[index][i]);
-//     if (oldShadow == Shadow::kEmpty) {
-//       return i;
-//     }
-//   }
+// bool LocalReadMap<MapSize,ShadowCnt>::Insert(uptr addr, RawShadow rawShadow){
+//     const unsigned index = CalcHash<MapSize>(addr);
+//     unsigned swapIndex = atomic_load_relaxed(&swapIndex_[index]);
+//     uptr keys[ShadowCnt] = {0UL};
+//     RawShadow shadows[ShadowCnt] = {Shadow::kEmpty};
+//     for(unsigned i=0;i<ShadowCnt;i++){
+//       keys[i] = atomic_load_relaxed(&addressMap_[index][swapIndex][i]);
+//       shadows[i] = LoadShadow(&localReadMap_[index][swapIndex][i]);
+//       if(keys[i]!=addr && keys[i]!=0UL){
+//         continue;        
+//       }
 
-//   return -1;
+//       StoreShadow(&localReadMap_[index][swapIndex][i],rawShadow);
+//       if(keys[i] == 0UL){
+//         atomic_store_release(&addressMap_[index][swapIndex][i],addr);
+//       }
+//       return true;
+//     }
+
+//     bool isOutdated[ShadowCnt];
+//     bool shouldGC = false;
+//     for(unsigned i=0;i<ShadowCnt;i++){
+//       isOutdated[i] = ctx->read_access_map.Contain(keys[i],sid_);
+//       shouldGC |= isOutdated[i];
+//     }
+
+//     if(!shouldGC)
+//       return false;
+
+//     bool stored = false;
+//     for(unsigned i=0;i<ShadowCnt;i++){
+
+//       if(!isOutdated[i]){
+//         StoreShadow(&localReadMap_[index][!swapIndex][i],shadows[i]);
+//         atomic_store_release(&addressMap_[index][!swapIndex][i],keys[i]);
+//       }else{
+        
+//         if(!stored){
+//           StoreShadow(&localReadMap_[index][!swapIndex][i],rawShadow);
+//           atomic_store_release(&addressMap_[index][!swapIndex][i],addr);
+//           stored = true;
+//         }else{
+//           StoreShadow(&localReadMap_[index][!swapIndex][i],Shadow::kEmpty);
+//           atomic_store_release(&addressMap_[index][!swapIndex][i],0UL);
+//         }
+        
+//       }
+      
+//       StoreShadow(&localReadMap_[index][swapIndex][i],Shadow::FreedMarker());
+//       atomic_store_release(&addressMap_[index][swapIndex][i],0UL);
+
+
+//     }
+
+//     atomic_store_release(&swapIndex_[index],!swapIndex);
+//     return stored;
 // }
+
 
 // template<unsigned MapSize, unsigned ShadowCnt>
-// int LocalReadMap<MapSize, ShadowCnt>::FindMatchedSlot(int index, uptr addr){
-//   for (int i = 0; i < ShadowCnt; i++) {
-//     if (static_cast<uptr>(atomic_load_relaxed(&addressMap_[index][i])) == addr) {
-//       return i;
-//     }
-//   }
+// RawShadow LocalReadMap<MapSize,ShadowCnt>::Get(uptr addr){
+//     const unsigned index = CalcHash<MapSize>(addr);
+//     bool expected = false;
+//     //The purpose of this compare_exchange is to force the reader threads to read the latest value written by the thread of the map owner and build release-acquire relation with the latest update.
+//     atomic_compare_exchange_strong(&swapIndex_[index],&expected,0,memory_order_acquire);
+//     unsigned swapIndex = expected;
 
-//   return -1;
+//     for(int i=0;i<ShadowCnt;i++){
+//       if(atomic_load_relaxed(&addressMap_[index][swapIndex][i]) == addr){
+//         RawShadow rawShadow = LoadShadow(&localReadMap_[index][swapIndex][i]);
+//         if(rawShadow == Shadow::FreedMarker()){
+//           rawShadow = atomic_load_relaxed(&addressMap_[index][!swapIndex][i]) == addr ? LoadShadow(&localReadMap_[index][!swapIndex][i]) : rawShadow;
+//         }
+//         return rawShadow == Shadow::FreedMarker() ? Shadow::kEmpty : rawShadow;
+//       }
+//     }
+    
+//     return Shadow::kEmpty;
 // }
+// template class LocalReadMap<1U,2U>;
 
-// template<unsigned MapSize, unsigned ShadowCnt>
-// int LocalReadMap<MapSize, ShadowCnt>::FindMatchedOrEmptySlot(int index, uptr addr){
-
-//   for(int i=0;i<ShadowCnt;i++){
-//     if(static_cast<uptr>(atomic_load_relaxed(&addressMap_[index][i])) == addr){
-//       return i;
-//     }
-//   }
-
-//   for(int i=0;i<ShadowCnt;i++){
-//     uptr loadedAddr = static_cast<uptr>(atomic_load_relaxed(&addressMap_[index][i]));
-//     if(loadedAddr != 0UL){
-
-//       // if(ctx->read_access_map.Contain(loadedAddr,sid_)){
-//       //   continue;
-//       // }
-//       atomic_compare_exchange_strong(&addressMap_[index][i],&loadedAddr,0UL,memory_order_acquire);
-
-//     }
-
-//     return i;
-//   }
-
-//   return -1;
 // }
-
-
-// }  // namespace __tsan

@@ -34,7 +34,6 @@
 #include "sanitizer_common/sanitizer_suppressions.h"
 #include "sanitizer_common/sanitizer_thread_registry.h"
 #include "sanitizer_common/sanitizer_vector.h"
-#include "sanitizer_common/sanitizer_hash.h"
 #include "tsan_defs.h"
 #include "tsan_flags.h"
 #include "tsan_ignoreset.h"
@@ -48,7 +47,7 @@
 #include "tsan_sync.h"
 #include "tsan_trace.h"
 #include "tsan_vector_clock.h"
-#include "tsan_read_access_map.h"
+#include "tsan_local_read_map.h"
 
 #if SANITIZER_WORDSIZE != 64
 # error "ThreadSanitizer is supported only on 64-bit platforms"
@@ -144,6 +143,7 @@ struct alignas(SANITIZER_CACHE_LINE_SIZE) TidSlot {
   atomic_uint32_t raw_epoch;
   ThreadState *thr;
   Vector<TidEpoch> journal;
+  LocalReadMap<kLocalReadMapSize,kShadowCnt> local_read_map;
   INode node;
 
   Epoch epoch() const {
@@ -380,8 +380,6 @@ struct Context {
   uptr mapped_shadow_begin;
   uptr mapped_shadow_end;
 #endif
-
-  // ReadAccessMap<static_cast<unsigned>(kReadAccessMapSize),static_cast<unsigned>(kShadowCnt)> read_access_map;
 
 };
 
@@ -807,13 +805,6 @@ void FuncExit(ThreadState *thr) {
   DCHECK_LT(thr->shadow_stack_pos, thr->shadow_stack_end);
 #endif
   thr->shadow_stack_pos--;
-}
-
-template<unsigned kSize>
-inline unsigned CalcHash(uptr addr) {
-  MurMur2Hash64Builder hasher;
-  hasher.add(static_cast<u64>(addr));
-  return static_cast<uptr>(hasher.get()) % kSize;
 }
 
 #if !SANITIZER_GO
