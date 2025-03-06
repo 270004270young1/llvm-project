@@ -173,7 +173,7 @@ class LocalReadMap {
     bool isOutdated[ShadowCnt];
     bool shouldGC = false;
     for(unsigned i=0;i<ShadowCnt;i++){
-      isOutdated[i] = !read_access_map.Contain(keys[i],sid_);
+      isOutdated[i] = !read_access_map->Contain(keys[i],sid_);
       
       shouldGC |= isOutdated[i];
     }

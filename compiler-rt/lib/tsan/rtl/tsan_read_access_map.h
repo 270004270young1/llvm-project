@@ -80,6 +80,7 @@ class ReadAccessMap {
     u8 gcTracker = 0U;
     //Force this thread to acquire the latest value of gcTracker_[index]
     atomic_compare_exchange_strong(&gcTracker_[index],&gcTracker,0U,memory_order_acquire);
+    // gcTracker = atomic_load_acquire(&gcTracker_[index]);
     const u8 swapIndex = gcTracker & 2U ? 1 : 0;
     const bool gcInProgress = gcTracker & 1U;
     Pair* curPair = readAccessMap_[index][swapIndex];
@@ -94,9 +95,10 @@ class ReadAccessMap {
     u64 curVals[ShadowCnt] = {0ULL};
     bool deleted = false;
     for (unsigned i = 0; i < ShadowCnt; i++) {
-      curKeys[i] = atomic_load_acquire(&curPair[i].val);
-      curVals[i] = atomic_load_relaxed(&curPair[i].key);
+      curVals[i] = atomic_load_acquire(&curPair[i].val);
+      curKeys[i] = atomic_load_relaxed(&curPair[i].key);
       if (!deleted && curKeys[i] == addr){
+        curVals[i] = DELETE_STATE;
         atomic_store_release(&curPair[i].val, DELETE_STATE);
         deleted = true;
       }
@@ -247,7 +249,7 @@ class ReadAccessMap {
   atomic_uint8_t gcTracker_[MapSize];
 };
 
-extern ReadAccessMap<kReadAccessMapSize, kShadowCnt> read_access_map;
+extern ReadAccessMap<kReadAccessMapSize, kShadowCnt>* read_access_map;
 
 
 }  // namespace __tsan

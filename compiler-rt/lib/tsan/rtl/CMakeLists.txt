@@ -108,7 +108,6 @@ set(TSAN_HEADERS
   tsan_vector_clock.h
   tsan_local_read_map.h
   tsan_read_access_map.h
-  # tsan_cal_hash.h
   )
 
 set(TSAN_RUNTIME_LIBRARIES)

@@ -28,6 +28,7 @@
 #include "tsan_suppressions.h"
 #include "tsan_symbolize.h"
 #include "ubsan/ubsan_init.h"
+#include "tsan_read_access_map.h"
 
 volatile int __tsan_resumed = 0;
 
@@ -52,7 +53,10 @@ alignas(SANITIZER_CACHE_LINE_SIZE) THREADLOCAL __attribute__((tls_model(
     "initial-exec"))) char cur_thread_placeholder[sizeof(ThreadState)];
 #endif
 alignas(SANITIZER_CACHE_LINE_SIZE) static char ctx_placeholder[sizeof(Context)];
+alignas(SANITIZER_CACHE_LINE_SIZE) static char read_access_map_placeholder[sizeof(ReadAccessMap<kReadAccessMapSize,kShadowCnt>)];
+
 Context *ctx;
+ReadAccessMap<kReadAccessMapSize,kShadowCnt>* read_access_map;
 
 // Can be overriden by a front-end.
 #ifdef TSAN_EXTERNAL_HOOKS
@@ -396,6 +400,7 @@ Context::Context()
   for (uptr i = 0; i < ARRAY_SIZE(slots); i++) {
     TidSlot* slot = &slots[i];
     slot->sid = static_cast<Sid>(i);
+    slot->local_read_map.Init(slot->sid);
     slot_queue.PushBack(slot);
   }
   global_epoch = 1;
@@ -691,6 +696,7 @@ void Initialize(ThreadState *thr) {
   SetCheckUnwindCallback(CheckUnwind);
 
   ctx = new(ctx_placeholder) Context;
+  read_access_map = new(read_access_map_placeholder) ReadAccessMap<kReadAccessMapSize,kShadowCnt>();
   const char *env_name = SANITIZER_GO ? "GORACE" : "TSAN_OPTIONS";
   const char *options = GetEnv(env_name);
   CacheBinaryName();
