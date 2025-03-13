@@ -173,7 +173,7 @@ class ReadAccessMap {
     return false;
   }
 
-  u64 Get(uptr addr){
+  unsigned Get(uptr addr, Sid* sids){
     const unsigned index = CalcHash(addr);
     const u8 swapIndex = atomic_load_acquire(&gcTracker_[index]) & 2U ? 1 : 0;
 
@@ -186,16 +186,16 @@ class ReadAccessMap {
       u64 cell = atomic_load_acquire(&readAccessMap_[index][swapIndex]
       [i].val);
       if (cell != DELETE_STATE) {
-        return cell;
+        return ExtractCell(cell,sids);
       }
 
       if (atomic_load_acquire(&readAccessMap_[index][!swapIndex][i].key) ==
           addr) {
         cell = atomic_load_acquire(&readAccessMap_[index][!swapIndex][i].val);
-        return cell == DELETE_STATE ? EMPTY_STATE : cell;
+        return cell == DELETE_STATE ? 0U : ExtractCell(cell,sids);
       }
     }
-    return EMPTY_STATE;
+    return 0U;
   }
 
 
@@ -237,6 +237,24 @@ class ReadAccessMap {
       }
     }
     return false;
+  }
+
+  ALWAYS_INLINE
+  unsigned ExtractCell(u64 cell, Sid* sids){
+    if(cell == EMPTY_STATE)
+      return 0;
+
+    unsigned idx = 0;
+    const u64 EMPTY = (1<<8)-1U;
+    for (;cell>0;cell>>=8) {
+      
+      if((cell & EMPTY) == EMPTY)
+        return idx;
+      
+      sids[idx++] = static_cast<Sid>(cell & EMPTY);
+
+    }
+    return idx;
   }
 
   unsigned CalcHash(uptr addr){

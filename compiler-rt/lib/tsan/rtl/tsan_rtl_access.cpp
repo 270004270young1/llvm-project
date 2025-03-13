@@ -12,6 +12,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "tsan_rtl.h"
+#include "tsan_read_access_map.h"
 
 namespace __tsan {
 
@@ -171,7 +172,7 @@ NOINLINE void DoReportRace(ThreadState* thr, RawShadow* shadow_mem, Shadow cur,
 #if !TSAN_VECTORIZE
 ALWAYS_INLINE
 bool ContainsSameAccess(RawShadow* s, Shadow cur, int unused0, int unused1,
-                        AccessType typ) {
+                        AccessType typ, ThreadState* thr, uptr addr) {
   for (uptr i = 0; i < kShadowCnt; i++) {
     auto old = LoadShadow(&s[i]);
     if (!(typ & kAccessRead)) {
@@ -193,7 +194,7 @@ bool ContainsSameAccess(RawShadow* s, Shadow cur, int unused0, int unused1,
 
 ALWAYS_INLINE
 bool CheckRaces(ThreadState* thr, RawShadow* shadow_mem, Shadow cur,
-                int unused0, int unused1, AccessType typ) {
+                int unused0, int unused1, AccessType typ, uptr addr) {
   bool stored = false;
   for (uptr idx = 0; idx < kShadowCnt; idx++) {
     RawShadow* sp = &shadow_mem[idx];
@@ -236,8 +237,8 @@ bool CheckRaces(ThreadState* thr, RawShadow* shadow_mem, Shadow cur,
 #else /* !TSAN_VECTORIZE */
 
 ALWAYS_INLINE
-bool ContainsSameAccess(RawShadow* unused0, Shadow unused1, m128 shadow,
-                        m128 access, AccessType typ) {
+bool ContainsSameAccess(RawShadow* unused0, Shadow cur, m128 shadow,
+                        m128 access, AccessType typ, ThreadState* thr, uptr addr) {
   // Note: we could check if there is a larger access of the same type,
   // e.g. we just allocated/memset-ed a block (so it contains 8 byte writes)
   // and now do smaller reads/writes, these can also be considered as "same
@@ -261,14 +262,22 @@ bool ContainsSameAccess(RawShadow* unused0, Shadow unused1, m128 shadow,
   const m128 read_mask = _mm_set1_epi32(static_cast<u32>(Shadow::kRodata));
   const m128 masked_shadow = _mm_or_si128(shadow, read_mask);
   m128 same = _mm_cmpeq_epi32(masked_shadow, access);
+  
+  RawShadow raw_shadow = thr->slot->local_read_map.Get(addr);
+  
+  bool local_shadow_same = false;
   // Range memory accesses check Shadow::kRodata before calling this,
   // Shadow::kRodatas is not possible for free memory access
   // and Go does not use Shadow::kRodata.
   if (!(typ & kAccessNoRodata) && !SANITIZER_GO) {
     const m128 ro = _mm_cmpeq_epi32(shadow, read_mask);
+    local_shadow_same = raw_shadow == Shadow::kRodata;
     same = _mm_or_si128(ro, same);
   }
-  return _mm_movemask_epi8(same);
+  raw_shadow = static_cast<RawShadow>(static_cast<u32>(raw_shadow) | static_cast<u32>(Shadow::kRodata));
+  local_shadow_same |= raw_shadow == cur.raw();
+
+  return local_shadow_same || _mm_movemask_epi8(same);
 }
 
 NOINLINE void DoReportRaceV(ThreadState* thr, RawShadow* shadow_mem, Shadow cur,
@@ -303,7 +312,7 @@ NOINLINE void DoReportRaceV(ThreadState* thr, RawShadow* shadow_mem, Shadow cur,
 
 ALWAYS_INLINE
 bool CheckRaces(ThreadState* thr, RawShadow* shadow_mem, Shadow cur,
-                m128 shadow, m128 access, AccessType typ) {
+                m128 shadow, m128 access, AccessType typ, uptr addr) {
   // Note: empty/zero slots don't intersect with any access.
   const m128 zero = _mm_setzero_si128();
   const m128 mask_access = _mm_set1_epi32(0x000000ff);
@@ -319,12 +328,52 @@ bool CheckRaces(ThreadState* thr, RawShadow* shadow_mem, Shadow cur,
   const m128 no_race =
       _mm_or_si128(_mm_or_si128(not_intersect, same_sid), both_read_or_atomic);
   const int race_mask = _mm_movemask_epi8(_mm_cmpeq_epi32(no_race, zero));
+
+  int race_mask_256;
+  m256 local_shadows;
+
+  if(!(typ & kAccessRead)){
+    const unsigned size = sizeof(u64)/sizeof(Sid);
+    Sid sids[size];
+    VECTOR_ALIGNED RawShadow rawShadows[size] = {Shadow::kEmpty};
+    unsigned length = read_access_map->Get(addr,sids);
+    for(unsigned i=0;i<length;i++){
+      rawShadows[i] = ctx->slots[static_cast<unsigned>(sids[i])].local_read_map.Get(addr);
+    }
+
+    const m256 zero_256 = _mm256_setzero_si256();
+    local_shadows = _mm256_load_si256(reinterpret_cast<m256 *>(rawShadows));
+    const m256 access_256 = _mm256_set1_epi32(static_cast<u32>(cur.raw()));
+    const m256 mask_sid_256 = _mm256_set1_epi32(0x0000ff00);
+    const m256 mask_atomic_256 = _mm256_set1_epi32(0x80000000);
+    const m256 access_and_256 = _mm256_and_si256(access_256, local_shadows);
+    const m256 access_xor_256 = _mm256_xor_si256(access_256, local_shadows);
+    const m256 not_same_sid_256 = _mm256_and_si256(access_xor_256, mask_sid_256);
+    const m256 same_sid_256 = _mm256_cmpeq_epi32(not_same_sid_256, zero_256);
+    const m256 both_atomic_256 = _mm256_and_si256(access_and_256, mask_atomic_256);
+
+    const m256 no_race_256 =
+      _mm256_or_si256(same_sid_256, both_atomic_256);
+    race_mask_256 = _mm256_movemask_epi8(_mm256_cmpeq_epi32(no_race_256, zero_256));
+
+    if(race_mask)
+      goto SHARED_256;
+
+  }
+  
   if (UNLIKELY(race_mask))
     goto SHARED;
+
 
 STORE : {
   if (typ & kAccessCheckOnly)
     return false;
+
+  if(typ & kAccessRead){
+    if(thr->slot->local_read_map.Insert(addr,cur.raw()) && read_access_map->Insert(addr,thr->slot->sid)){
+      return false;
+    }
+  }
   // We could also replace different sid's if access is the same,
   // rw weaker and happens before. However, just checking access below
   // is not enough because we also need to check that !both_read_or_atomic
@@ -355,7 +404,7 @@ STORE : {
   return false;
 }
 
-SHARED:
+SHARED: {
   m128 thread_epochs = _mm_set1_epi32(0x7fffffff);
   // Need to unwind this because _mm_extract_epi8/_mm_insert_epi32
   // indexes must be constants.
@@ -374,11 +423,49 @@ SHARED:
   const m128 shadow_epochs = _mm_and_si128(shadow, mask_epoch);
   const m128 concurrent = _mm_cmplt_epi32(thread_epochs, shadow_epochs);
   const int concurrent_mask = _mm_movemask_epi8(concurrent);
+
   if (LIKELY(concurrent_mask == 0))
     goto STORE;
 
   DoReportRaceV(thr, shadow_mem, cur, concurrent_mask, shadow, typ);
   return true;
+}
+
+SHARED_256:
+  m256 thread_epochs_256 = _mm256_set1_epi32(0x7fffffff);
+  // Need to unwind this because _mm_extract_epi8/_mm_insert_epi32
+  // indexes must be constants.
+#  define LOAD_EPOCH_256(idx)                                                     \
+    if (LIKELY(race_mask_256 & (1 << (idx * 4)))) {                               \
+      u8 sid = _mm256_extract_epi8(local_shadows, idx * 4 + 1);                         \
+      u16 epoch = static_cast<u16>(thr->clock.Get(static_cast<Sid>(sid)));    \
+      thread_epochs_256 = _mm256_insert_epi32(thread_epochs_256, u32(epoch) << 16, idx); \
+    }
+  LOAD_EPOCH_256(0);
+  LOAD_EPOCH_256(1);
+  LOAD_EPOCH_256(2);
+  LOAD_EPOCH_256(3);
+  LOAD_EPOCH_256(4);
+  LOAD_EPOCH_256(5);
+  LOAD_EPOCH_256(6);
+  LOAD_EPOCH_256(7);
+
+#  undef LOAD_EPOCH_256
+  const m256 mask_epoch_256 = _mm256_set1_epi32(0x3fff0000);
+  const m256 shadow_epochs_256 = _mm256_and_si256(local_shadows, mask_epoch_256);
+  const m256 concurrent_256 = _mm256_cmpgt_epi32(shadow_epochs_256, thread_epochs_256);
+  const int concurrent_mask = _mm256_movemask_epi8(concurrent_256);
+
+  if (UNLIKELY(concurrent_mask != 0)){
+    DoReportRaceV(thr, shadow_mem, cur, concurrent_mask, shadow, typ);
+    return true;
+  }
+
+  if(UNLIKELY(race_mask))
+    goto SHARED;
+
+  goto STORE;
+
 }
 
 #  define LOAD_CURRENT_SHADOW(cur, shadow_mem)                         \
@@ -433,13 +520,13 @@ ALWAYS_INLINE USED void MemoryAccess(ThreadState* thr, uptr pc, uptr addr,
   Shadow cur(fast_state, addr, size, typ);
 
   LOAD_CURRENT_SHADOW(cur, shadow_mem);
-  if (LIKELY(ContainsSameAccess(shadow_mem, cur, shadow, access, typ)))
+  if (LIKELY(ContainsSameAccess(shadow_mem, cur, shadow, access, typ,thr,addr)))
     return;
   if (UNLIKELY(fast_state.GetIgnoreBit()))
     return;
   if (!TryTraceMemoryAccess(thr, pc, addr, size, typ))
     return TraceRestartMemoryAccess(thr, pc, addr, size, typ);
-  CheckRaces(thr, shadow_mem, cur, shadow, access, typ);
+  CheckRaces(thr, shadow_mem, cur, shadow, access, typ, addr);
 }
 
 void MemoryAccess16(ThreadState* thr, uptr pc, uptr addr, AccessType typ);
@@ -462,22 +549,22 @@ ALWAYS_INLINE USED void MemoryAccess16(ThreadState* thr, uptr pc, uptr addr,
   bool traced = false;
   {
     LOAD_CURRENT_SHADOW(cur, shadow_mem);
-    if (LIKELY(ContainsSameAccess(shadow_mem, cur, shadow, access, typ)))
+    if (LIKELY(ContainsSameAccess(shadow_mem, cur, shadow, access, typ, thr, addr)))
       goto SECOND;
     if (!TryTraceMemoryAccessRange(thr, pc, addr, size, typ))
       return RestartMemoryAccess16(thr, pc, addr, typ);
     traced = true;
-    if (UNLIKELY(CheckRaces(thr, shadow_mem, cur, shadow, access, typ)))
+    if (UNLIKELY(CheckRaces(thr, shadow_mem, cur, shadow, access, typ, addr)))
       return;
   }
 SECOND:
   shadow_mem += kShadowCnt;
   LOAD_CURRENT_SHADOW(cur, shadow_mem);
-  if (LIKELY(ContainsSameAccess(shadow_mem, cur, shadow, access, typ)))
+  if (LIKELY(ContainsSameAccess(shadow_mem, cur, shadow, access, typ, thr, addr)))
     return;
   if (!traced && !TryTraceMemoryAccessRange(thr, pc, addr, size, typ))
     return RestartMemoryAccess16(thr, pc, addr, typ);
-  CheckRaces(thr, shadow_mem, cur, shadow, access, typ);
+  CheckRaces(thr, shadow_mem, cur, shadow, access, typ, addr);
 }
 
 NOINLINE
@@ -500,12 +587,12 @@ ALWAYS_INLINE USED void UnalignedMemoryAccess(ThreadState* thr, uptr pc,
   {
     Shadow cur(fast_state, addr, size1, typ);
     LOAD_CURRENT_SHADOW(cur, shadow_mem);
-    if (LIKELY(ContainsSameAccess(shadow_mem, cur, shadow, access, typ)))
+    if (LIKELY(ContainsSameAccess(shadow_mem, cur, shadow, access, typ, thr, addr)))
       goto SECOND;
     if (!TryTraceMemoryAccessRange(thr, pc, addr, size, typ))
       return RestartUnalignedMemoryAccess(thr, pc, addr, size, typ);
     traced = true;
-    if (UNLIKELY(CheckRaces(thr, shadow_mem, cur, shadow, access, typ)))
+    if (UNLIKELY(CheckRaces(thr, shadow_mem, cur, shadow, access, typ, addr)))
       return;
   }
 SECOND:
@@ -515,11 +602,11 @@ SECOND:
   shadow_mem += kShadowCnt;
   Shadow cur(fast_state, 0, size2, typ);
   LOAD_CURRENT_SHADOW(cur, shadow_mem);
-  if (LIKELY(ContainsSameAccess(shadow_mem, cur, shadow, access, typ)))
+  if (LIKELY(ContainsSameAccess(shadow_mem, cur, shadow, access, typ, thr, addr)))
     return;
   if (!traced && !TryTraceMemoryAccessRange(thr, pc, addr, size, typ))
     return RestartUnalignedMemoryAccess(thr, pc, addr, size, typ);
-  CheckRaces(thr, shadow_mem, cur, shadow, access, typ);
+  CheckRaces(thr, shadow_mem, cur, shadow, access, typ, addr);
 }
 
 void ShadowSet(RawShadow* p, RawShadow* end, RawShadow v) {
@@ -614,13 +701,13 @@ void MemoryRangeFreed(ThreadState* thr, uptr pc, uptr addr, uptr size) {
       static_cast<u32>(Shadow::FreedInfo(cur.sid(), cur.epoch())), 0, 0);
   for (; size; size -= kShadowCell, shadow_mem += kShadowCnt) {
     const m128 shadow = _mm_load_si128((m128*)shadow_mem);
-    if (UNLIKELY(CheckRaces(thr, shadow_mem, cur, shadow, access, typ)))
+    if (UNLIKELY(CheckRaces(thr, shadow_mem, cur, shadow, access, typ, addr)))
       return;
     _mm_store_si128((m128*)shadow_mem, freed);
   }
 #else
   for (; size; size -= kShadowCell, shadow_mem += kShadowCnt) {
-    if (UNLIKELY(CheckRaces(thr, shadow_mem, cur, 0, 0, typ)))
+    if (UNLIKELY(CheckRaces(thr, shadow_mem, cur, 0, 0, typ, addr)))
       return;
     StoreShadow(&shadow_mem[0], Shadow::FreedMarker());
     StoreShadow(&shadow_mem[1], Shadow::FreedInfo(cur.sid(), cur.epoch()));
@@ -650,9 +737,10 @@ ALWAYS_INLINE
 bool MemoryAccessRangeOne(ThreadState* thr, RawShadow* shadow_mem, Shadow cur,
                           AccessType typ) {
   LOAD_CURRENT_SHADOW(cur, shadow_mem);
-  if (LIKELY(ContainsSameAccess(shadow_mem, cur, shadow, access, typ)))
+  uptr addr = ShadowToMem(shadow_mem);
+  if (LIKELY(ContainsSameAccess(shadow_mem, cur, shadow, access, typ, thr, addr)))
     return false;
-  return CheckRaces(thr, shadow_mem, cur, shadow, access, typ);
+  return CheckRaces(thr, shadow_mem, cur, shadow, access, typ, addr);
 }
 
 template <bool is_read>

@@ -43,15 +43,12 @@ TEST(ReadAccessMap, BasicGetInsert) {
   ReadAccessMap<1U, 2U> readAccessMap;
   uptr addr = 31UL;
   Sid sid = static_cast<Sid>(13);
+  Sid sids[size];
 
-  EXPECT_EQ(readAccessMap.Get(addr),EMPTY_STATE);
+  EXPECT_EQ(readAccessMap.Get(addr,sids),0U);
   EXPECT_EQ(readAccessMap.Insert(addr, sid), true);
 
-  Sid sids[size];
-  u64 expected = readAccessMap.Get(addr);
-  unsigned idx = GetSids(expected,sids);
-  
-  EXPECT_EQ(idx,1U);
+  EXPECT_EQ(readAccessMap.Get(addr,sids),1U);
   EXPECT_EQ(sids[0],sid);
 }
 
@@ -65,10 +62,8 @@ TEST(ReadAccessMap, TestInsertOrder) {
   }
 
   Sid expectedSids[size];
-  u64 expected = readAccessMap.Get(addr);
-  unsigned idx = GetSids(expected,expectedSids);
+  EXPECT_EQ(readAccessMap.Get(addr,expectedSids),size);
 
-  EXPECT_EQ(idx,size);
   for(int i=0;i<size;i++){
     EXPECT_EQ(sids[i],expectedSids[i]);
   }
@@ -108,9 +103,8 @@ TEST(ReadAccessMap, TestRemove){
 
   readAccessMap.Remove(addr1);
 
-  EXPECT_EQ(readAccessMap.Get(addr1),EMPTY_STATE);
-  idx = GetSids(readAccessMap.Get(addr2),sids);
-  EXPECT_EQ(idx,1U);
+  EXPECT_EQ(readAccessMap.Get(addr1,sids),0U);
+  EXPECT_EQ(readAccessMap.Get(addr2,sids),1U);
   EXPECT_EQ(sids[0],sid2);
 
 }
@@ -127,12 +121,10 @@ TEST(ReadAccessMap, TestGC){
   EXPECT_EQ(readAccessMap.Insert(addr1,sid1),true);
   EXPECT_EQ(readAccessMap.Insert(addr2,sid2),true);
 
-  idx = GetSids(readAccessMap.Get(addr1),sids);
-  EXPECT_EQ(idx,1U);
+  EXPECT_EQ(readAccessMap.Get(addr1,sids),1U);
   EXPECT_EQ(sids[0],sid1);
 
-  idx = GetSids(readAccessMap.Get(addr2),sids);
-  EXPECT_EQ(idx,1U);
+  EXPECT_EQ(readAccessMap.Get(addr2,sids),1U);
   EXPECT_EQ(sids[0],sid2);
 
   readAccessMap.Remove(addr1);
@@ -154,11 +146,10 @@ TEST(ReadAccessMap, TestGC){
   EXPECT_EQ(pair.key,addr2);
   EXPECT_NE(pair.val,EMPTY_STATE);
 
-  EXPECT_EQ(readAccessMap.Get(addr1),EMPTY_STATE);
-  EXPECT_NE(readAccessMap.Get(addr2),EMPTY_STATE);
+  EXPECT_EQ(readAccessMap.Get(addr1,sids),0U);
+  EXPECT_NE(readAccessMap.Get(addr2,sids),0U);
 
-  idx = GetSids(readAccessMap.Get(addr2),sids);
-  EXPECT_EQ(idx,1U);
+  EXPECT_EQ(readAccessMap.Get(addr2,sids),1U);
   EXPECT_EQ(sids[0],sid2);
 
 
