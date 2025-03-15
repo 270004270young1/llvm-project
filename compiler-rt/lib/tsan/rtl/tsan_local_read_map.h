@@ -216,6 +216,7 @@ class LocalReadMap {
     //The purpose of this compare_exchange is to force the reader threads to read the latest value written by the thread of the map owner and build release-acquire relation with the latest update.
     atomic_compare_exchange_strong(&swapIndex_[index],&expected,0,memory_order_acquire);
     unsigned swapIndex = expected;
+    // u32 swapIndex = atomic_load_acquire(&swapIndex_[index]);
 
     for(int i=0;i<ShadowCnt;i++){
       if(atomic_load_relaxed(&addressMap_[index][swapIndex][i]) == addr){

@@ -143,7 +143,6 @@ struct alignas(SANITIZER_CACHE_LINE_SIZE) TidSlot {
   atomic_uint32_t raw_epoch;
   ThreadState *thr;
   Vector<TidEpoch> journal;
-  LocalReadMap<kLocalReadMapSize,kShadowCnt> local_read_map;
   INode node;
 
   Epoch epoch() const {
@@ -384,6 +383,9 @@ struct Context {
 };
 
 extern Context *ctx;  // The one and the only global runtime context.
+
+extern LocalReadMap<kLocalReadMapSize,kShadowCnt> *local_read_maps;
+
 
 ALWAYS_INLINE Flags *flags() {
   return &ctx->flags;

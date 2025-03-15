@@ -157,6 +157,11 @@ NOINLINE void DoReportRace(ThreadState* thr, RawShadow* shadow_mem, Shadow cur,
   // This prevents trapping on this address in future.
   for (uptr i = 0; i < kShadowCnt; i++)
     StoreShadow(&shadow_mem[i], i == 0 ? Shadow::kRodata : Shadow::kEmpty);
+
+  const uptr addr = ShadowToMem(shadow_mem);
+  uptr addr_off;
+  cur.GetAccess(&addr_off,nullptr,nullptr);
+  read_access_map->Remove(addr+addr_off);
   // See the comment in MemoryRangeFreed as to why the slot is locked
   // for free memory accesses. ReportRace must not be called with
   // the slot locked because of the fork. But MemoryRangeFreed is not
@@ -263,9 +268,10 @@ bool ContainsSameAccess(RawShadow* unused0, Shadow cur, m128 shadow,
   const m128 masked_shadow = _mm_or_si128(shadow, read_mask);
   m128 same = _mm_cmpeq_epi32(masked_shadow, access);
   
-  RawShadow raw_shadow = thr->slot->local_read_map.Get(addr);
+  RawShadow raw_shadow = local_read_maps[static_cast<u32>(cur.sid())].Get(addr);
   
   bool local_shadow_same = false;
+
   // Range memory accesses check Shadow::kRodata before calling this,
   // Shadow::kRodatas is not possible for free memory access
   // and Go does not use Shadow::kRodata.
@@ -278,6 +284,8 @@ bool ContainsSameAccess(RawShadow* unused0, Shadow cur, m128 shadow,
   local_shadow_same |= raw_shadow == cur.raw();
 
   return local_shadow_same || _mm_movemask_epi8(same);
+  // return _mm_movemask_epi8(same);
+
 }
 
 NOINLINE void DoReportRaceV(ThreadState* thr, RawShadow* shadow_mem, Shadow cur,
@@ -310,6 +318,45 @@ NOINLINE void DoReportRaceV(ThreadState* thr, RawShadow* shadow_mem, Shadow cur,
   DoReportRace(thr, shadow_mem, cur, prev, typ);
 }
 
+NOINLINE void DoReportLocalRace(ThreadState* thr, RawShadow* shadow_mem, Shadow cur, u32 race_mask, m256 shadow, AccessType typ){
+  CHECK_NE(race_mask, 0);
+  u32 old;
+  // Note: _mm_extract_epi32 index must be a constant value.
+  switch (__builtin_ffs(race_mask) / 4) {
+    case 0:
+      old = _mm256_extract_epi32(shadow, 0);
+      break;
+    case 1:
+      old = _mm256_extract_epi32(shadow, 1);
+      break;
+    case 2:
+      old = _mm256_extract_epi32(shadow, 2);
+      break;
+    case 3:
+      old = _mm256_extract_epi32(shadow, 3);
+      break;
+    case 4:
+      old = _mm256_extract_epi32(shadow, 4);
+      break;
+    case 5:
+      old = _mm256_extract_epi32(shadow, 5);
+      break;
+    case 6:
+      old = _mm256_extract_epi32(shadow, 6);
+      break;
+    case 7:
+      old = _mm256_extract_epi32(shadow, 7);
+      break;
+  }
+  
+  if (typ & kAccessSlotLocked)
+    SlotUnlock(thr);
+  ReportRace(thr, shadow_mem, cur, Shadow(static_cast<RawShadow>(old)), typ);
+  if (typ & kAccessSlotLocked)
+    SlotLock(thr);
+
+}
+
 ALWAYS_INLINE
 bool CheckRaces(ThreadState* thr, RawShadow* shadow_mem, Shadow cur,
                 m128 shadow, m128 access, AccessType typ, uptr addr) {
@@ -333,12 +380,14 @@ bool CheckRaces(ThreadState* thr, RawShadow* shadow_mem, Shadow cur,
   m256 local_shadows;
 
   if(!(typ & kAccessRead)){
-    const unsigned size = sizeof(u64)/sizeof(Sid);
+    const u32 size = sizeof(u64)/sizeof(Sid);
     Sid sids[size];
-    VECTOR_ALIGNED RawShadow rawShadows[size] = {Shadow::kEmpty};
-    unsigned length = read_access_map->Get(addr,sids);
-    for(unsigned i=0;i<length;i++){
-      rawShadows[i] = ctx->slots[static_cast<unsigned>(sids[i])].local_read_map.Get(addr);
+    for(int i=0;i<size;i++)
+      sids[i] = static_cast<Sid>(0);
+    alignas(32) RawShadow rawShadows[size] = {Shadow::kEmpty};
+    u32 length = read_access_map->Get(addr,sids);
+    for(u32 i=0;i<length;i++){
+      rawShadows[i] = local_read_maps[static_cast<u32>(sids[i])].Get(addr);
     }
 
     const m256 zero_256 = _mm256_setzero_si256();
@@ -356,7 +405,7 @@ bool CheckRaces(ThreadState* thr, RawShadow* shadow_mem, Shadow cur,
       _mm256_or_si256(same_sid_256, both_atomic_256);
     race_mask_256 = _mm256_movemask_epi8(_mm256_cmpeq_epi32(no_race_256, zero_256));
 
-    if(race_mask)
+    if(race_mask_256)
       goto SHARED_256;
 
   }
@@ -370,7 +419,7 @@ STORE : {
     return false;
 
   if(typ & kAccessRead){
-    if(thr->slot->local_read_map.Insert(addr,cur.raw()) && read_access_map->Insert(addr,thr->slot->sid)){
+    if(local_read_maps[static_cast<u32>(cur.sid())].Insert(addr,cur.raw()) && read_access_map->Insert(addr,cur.sid())){
       return false;
     }
   }
@@ -454,10 +503,14 @@ SHARED_256:
   const m256 mask_epoch_256 = _mm256_set1_epi32(0x3fff0000);
   const m256 shadow_epochs_256 = _mm256_and_si256(local_shadows, mask_epoch_256);
   const m256 concurrent_256 = _mm256_cmpgt_epi32(shadow_epochs_256, thread_epochs_256);
-  const int concurrent_mask = _mm256_movemask_epi8(concurrent_256);
+  const int concurrent_mask_256 = _mm256_movemask_epi8(concurrent_256);
 
-  if (UNLIKELY(concurrent_mask != 0)){
-    DoReportRaceV(thr, shadow_mem, cur, concurrent_mask, shadow, typ);
+  // const int concurrent_mask_256 = _mm256_movemask_epi8(shadow_epochs_256);
+
+
+  if (UNLIKELY(concurrent_mask_256 != 0)){
+    //Need to pass shadow_mem instead of local_shadows to calculate the correct addr
+    DoReportLocalRace(thr, shadow_mem, cur, concurrent_mask_256, local_shadows, typ);
     return true;
   }
 
@@ -616,6 +669,15 @@ void ShadowSet(RawShadow* p, RawShadow* end, RawShadow v) {
   UNUSED const uptr kAlign = kShadowCnt * kShadowSize;
   DCHECK_EQ(reinterpret_cast<uptr>(p) % kAlign, 0);
   DCHECK_EQ(reinterpret_cast<uptr>(end) % kAlign, 0);
+
+  for(uptr i=0;i<end-p;i++){
+    uptr addr = ShadowToMem(&p[i]);
+    uptr addr_off;
+    Shadow shadow = Shadow(p[i]);
+    shadow.GetAccess(&addr_off,nullptr,nullptr);
+    read_access_map->Remove(addr+addr_off);
+  }
+
 #if !TSAN_VECTORIZE
   for (; p < end; p += kShadowCnt) {
     p[0] = v;

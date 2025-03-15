@@ -54,9 +54,11 @@ alignas(SANITIZER_CACHE_LINE_SIZE) THREADLOCAL __attribute__((tls_model(
 #endif
 alignas(SANITIZER_CACHE_LINE_SIZE) static char ctx_placeholder[sizeof(Context)];
 alignas(SANITIZER_CACHE_LINE_SIZE) static char read_access_map_placeholder[sizeof(ReadAccessMap<kReadAccessMapSize,kShadowCnt>)];
+alignas(SANITIZER_CACHE_LINE_SIZE) static char local_read_map_placeholder[sizeof(LocalReadMap<kLocalReadMapSize,kShadowCnt>)*(kThreadSlotCount-1)];
 
 Context *ctx;
 ReadAccessMap<kReadAccessMapSize,kShadowCnt>* read_access_map;
+LocalReadMap<kLocalReadMapSize,kShadowCnt>* local_read_maps;
 
 // Can be overriden by a front-end.
 #ifdef TSAN_EXTERNAL_HOOKS
@@ -400,7 +402,6 @@ Context::Context()
   for (uptr i = 0; i < ARRAY_SIZE(slots); i++) {
     TidSlot* slot = &slots[i];
     slot->sid = static_cast<Sid>(i);
-    slot->local_read_map.Init(slot->sid);
     slot_queue.PushBack(slot);
   }
   global_epoch = 1;
@@ -697,6 +698,12 @@ void Initialize(ThreadState *thr) {
 
   ctx = new(ctx_placeholder) Context;
   read_access_map = new(read_access_map_placeholder) ReadAccessMap<kReadAccessMapSize,kShadowCnt>();
+  local_read_maps = reinterpret_cast<LocalReadMap<kLocalReadMapSize,kShadowCnt> *>(local_read_map_placeholder);
+  for(int i=0;i<kThreadSlotCount-1;i++){
+    new(&local_read_maps[i]) LocalReadMap<kLocalReadMapSize,kShadowCnt>();
+    local_read_maps[i].Init(static_cast<Sid>(i));
+  }
+
   const char *env_name = SANITIZER_GO ? "GORACE" : "TSAN_OPTIONS";
   const char *options = GetEnv(env_name);
   CacheBinaryName();
