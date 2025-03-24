@@ -2,6 +2,7 @@
 #define TSAN_READ_ACCESS_MAP_H
 
 #include "tsan_defs.h"
+#include "tsan_platform.h"
 #include "sanitizer_common/sanitizer_hash.h"
 
 namespace __tsan {
@@ -16,7 +17,7 @@ struct KeyValPair {
 
 typedef KeyValPair<atomic_uintptr_t, atomic_uint64_t> Pair;
 
-template <unsigned MapSize = 0U, unsigned ShadowCnt = 0U>
+template <u32 MapSize = 0U, u32 ShadowCnt = 0U>
 class ReadAccessMap {
  public:
 
@@ -26,8 +27,8 @@ class ReadAccessMap {
   ReadAccessMap& operator=(ReadAccessMap&&) = delete;
   
   ReadAccessMap(){
-    for (unsigned i = 0; i < MapSize; i++) {
-      for (unsigned j = 0; j < ShadowCnt; j++) {
+    for (u32 i = 0; i < MapSize; i++) {
+      for (u32 j = 0; j < ShadowCnt; j++) {
         atomic_store_relaxed(&readAccessMap_[i][0][j].key, 0UL);
         atomic_store_relaxed(&readAccessMap_[i][1][j].key, 0UL);
 
@@ -39,7 +40,7 @@ class ReadAccessMap {
   }
 
   bool Insert(uptr addr, Sid sid){
-    const unsigned index = CalcHash(addr);
+    const u32 index = CalcShadowHash(addr);
     u8 gcTracker = 0U;
     //Force this thread to acquire the latest value of gcTracker_[index]
     atomic_compare_exchange_strong(&gcTracker_[index],&gcTracker,0U,memory_order_acquire);
@@ -76,25 +77,20 @@ class ReadAccessMap {
   }
 
   void Remove(uptr addr){
-    const unsigned index = CalcHash(addr);
+    const u32 index = CalcShadowHash(addr);
     u8 gcTracker = 0U;
     //Force this thread to acquire the latest value of gcTracker_[index]
     atomic_compare_exchange_strong(&gcTracker_[index],&gcTracker,0U,memory_order_acquire);
-    // gcTracker = atomic_load_acquire(&gcTracker_[index]);
+    
     const u8 swapIndex = gcTracker & 2U ? 1 : 0;
     const bool gcInProgress = gcTracker & 1U;
     Pair* curPair = readAccessMap_[index][swapIndex];
     Pair* swapPair = readAccessMap_[index][!swapIndex];
-    // for (unsigned i = 0; i < ShadowCnt; i++) {
-    //   if (static_cast<uptr>(atomic_load_acquire(&curPair[i].key)) == addr && atomic_load_acquire(&curPair[i].val) != DELETE_STATE){
-    //     atomic_store_release(&curPair[i].val, DELETE_STATE);
-    //     break;
-    //   }
-    // }
+
     uptr curKeys[ShadowCnt] = {0UL};
     u64 curVals[ShadowCnt] = {0ULL};
     bool deleted = false;
-    for (unsigned i = 0; i < ShadowCnt; i++) {
+    for (u32 i = 0; i < ShadowCnt; i++) {
       curVals[i] = atomic_load_acquire(&curPair[i].val);
       curKeys[i] = atomic_load_relaxed(&curPair[i].key);
       if (!deleted && curKeys[i] == addr){
@@ -104,12 +100,8 @@ class ReadAccessMap {
       }
     }
 
-    // for (unsigned i = 0; i < ShadowCnt; i++) {
-    //   if (static_cast<uptr>(atomic_load_acquire(&curPair[i].key)) == 0UL)
-    //     return;
-    // }
     bool hasDeletedState = deleted;
-    for (unsigned i = 0; i < ShadowCnt; i++) {
+    for (u32 i = 0; i < ShadowCnt; i++) {
       if (curKeys[i] == 0UL)
         return;
       hasDeletedState |= curVals[i] == DELETE_STATE;
@@ -124,7 +116,7 @@ class ReadAccessMap {
       return;
 
     //Start GC
-    for (unsigned i = 0; i < ShadowCnt; i++) {
+    for (u32 i = 0; i < ShadowCnt; i++) {
       u64 curVal = curVals[i];
       uptr curKey = curKeys[i];
       if (curVal == DELETE_STATE) {
@@ -132,13 +124,7 @@ class ReadAccessMap {
         atomic_store_release(&swapPair[i].val, EMPTY_STATE);
         continue;
       }
-      // u64 oldVal = atomic_load_acquire(&swapPair[i].val);
 
-      // if (!atomic_compare_exchange_strong(&swapPair[i].val, &oldVal, curVal,
-      //                                     memory_order_relaxed)) {
-      //   atomic_store_release(&gcTracker_[index], gcTracker);
-      //   return atomic_load_acquire(&gcTracker_[index]);
-      // }
       atomic_store_relaxed(&swapPair[i].key,curKey);
       atomic_store_release(&swapPair[i].val,curVal);
 
@@ -155,7 +141,7 @@ class ReadAccessMap {
   }
 
   bool Contain(uptr addr, Sid sid){
-    const unsigned index = CalcHash(addr);
+    const u32 index = CalcShadowHash(addr);
     const u8 swapIndex = atomic_load_acquire(&gcTracker_[index]) & 2U ? 1 : 0;
 
     if (Pair* pair = FindMatchedPair(index, addr, swapIndex)) {
@@ -173,11 +159,11 @@ class ReadAccessMap {
     return false;
   }
 
-  unsigned Get(uptr addr, Sid* sids){
-    const unsigned index = CalcHash(addr);
+  u32 Get(uptr addr, Sid* sids){
+    const u32 index = CalcShadowHash(addr);
     const u8 swapIndex = atomic_load_acquire(&gcTracker_[index]) & 2U ? 1 : 0;
 
-    for (unsigned i = 0; i < ShadowCnt; i++) {
+    for (u32 i = 0; i < ShadowCnt; i++) {
       uptr key = atomic_load_acquire(&readAccessMap_[index][swapIndex][i].key);
       if (key != addr) {
         continue;
@@ -196,6 +182,34 @@ class ReadAccessMap {
       }
     }
     return 0U;
+  }
+
+  void ResetShadow(uptr addr){
+    const u32 index = CalcShadowHash(addr);
+    u8 gcTracker = 0U;
+    //Force this thread to acquire the latest value of gcTracker_[index]
+    atomic_compare_exchange_strong(&gcTracker_[index],&gcTracker,0U,memory_order_acquire);
+    
+    const u8 swapIndex = gcTracker & 2U ? 1 : 0;
+    const bool gcInProgress = gcTracker & 1U;
+    Pair* curPair = readAccessMap_[index][swapIndex];
+    Pair* swapPair = readAccessMap_[index][!swapIndex];
+
+    for(u32 i=0;i<ShadowCnt;i++){
+      atomic_store_relaxed(&curPair[i].val,DELETE_STATE);
+    }
+
+    if (gcInProgress ||
+        !atomic_compare_exchange_strong(&gcTracker_[index], &gcTracker,
+                                        gcTracker | 1U, memory_order_acq_rel))
+      return;
+    
+    for(u32 i=0;i<ShadowCnt;i++){
+      atomic_store_relaxed(&swapPair[i].key,0UL);
+      atomic_store_release(&swapPair[i].val,EMPTY_STATE);
+    }
+
+    atomic_store_release(&gcTracker_[index],!swapIndex << 1);
   }
 
 
@@ -240,11 +254,11 @@ class ReadAccessMap {
   }
 
   ALWAYS_INLINE
-  unsigned ExtractCell(u64 cell, Sid* sids){
+  u32 ExtractCell(u64 cell, Sid* sids){
     if(cell == EMPTY_STATE)
       return 0;
 
-    unsigned idx = 0;
+    u32 idx = 0;
     const u64 EMPTY = (1<<8)-1U;
     for (;cell>0;cell>>=8) {
       
@@ -257,9 +271,10 @@ class ReadAccessMap {
     return idx;
   }
 
-  unsigned CalcHash(uptr addr){
+  u32 CalcShadowHash(uptr addr){
     MurMur2Hash64Builder hasher;
-    hasher.add(static_cast<u64>(addr));
+    const uptr shadowAddr = reinterpret_cast<uptr>(MemToShadow(addr));
+    hasher.add(static_cast<u64>(shadowAddr));
     return static_cast<uptr>(hasher.get()) % MapSize;
   }
 

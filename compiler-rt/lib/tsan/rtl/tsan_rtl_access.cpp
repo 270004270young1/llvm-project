@@ -158,10 +158,8 @@ NOINLINE void DoReportRace(ThreadState* thr, RawShadow* shadow_mem, Shadow cur,
   for (uptr i = 0; i < kShadowCnt; i++)
     StoreShadow(&shadow_mem[i], i == 0 ? Shadow::kRodata : Shadow::kEmpty);
 
-  const uptr addr = ShadowToMem(shadow_mem);
-  uptr addr_off;
-  cur.GetAccess(&addr_off,nullptr,nullptr);
-  read_access_map->Remove(addr+addr_off);
+  const uptr addr = reinterpret_cast<uptr>(ShadowToMem(shadow_mem));
+  read_access_map->ResetShadow(addr);
   // See the comment in MemoryRangeFreed as to why the slot is locked
   // for free memory accesses. ReportRace must not be called with
   // the slot locked because of the fork. But MemoryRangeFreed is not
@@ -268,20 +266,23 @@ bool ContainsSameAccess(RawShadow* unused0, Shadow cur, m128 shadow,
   const m128 masked_shadow = _mm_or_si128(shadow, read_mask);
   m128 same = _mm_cmpeq_epi32(masked_shadow, access);
   
-  RawShadow raw_shadow = local_read_maps[static_cast<u32>(cur.sid())].Get(addr);
-  
   bool local_shadow_same = false;
+  RawShadow raw_shadow = local_read_maps[static_cast<u32>(cur.sid())].Get(addr);
+  raw_shadow = static_cast<RawShadow>(static_cast<u32>(raw_shadow) | static_cast<u32>(Shadow::kRodata));
+  local_shadow_same = raw_shadow == cur.raw();
 
   // Range memory accesses check Shadow::kRodata before calling this,
   // Shadow::kRodatas is not possible for free memory access
   // and Go does not use Shadow::kRodata.
   if (!(typ & kAccessNoRodata) && !SANITIZER_GO) {
     const m128 ro = _mm_cmpeq_epi32(shadow, read_mask);
-    local_shadow_same = raw_shadow == Shadow::kRodata;
     same = _mm_or_si128(ro, same);
+    local_shadow_same |= raw_shadow == Shadow::kRodata;
   }
-  raw_shadow = static_cast<RawShadow>(static_cast<u32>(raw_shadow) | static_cast<u32>(Shadow::kRodata));
-  local_shadow_same |= raw_shadow == cur.raw();
+  
+
+  if(!read_access_map->Contain(addr,cur.sid()))
+    local_shadow_same = false;
 
   return local_shadow_same || _mm_movemask_epi8(same);
   // return _mm_movemask_epi8(same);
@@ -418,11 +419,15 @@ STORE : {
   if (typ & kAccessCheckOnly)
     return false;
 
-  if(typ & kAccessRead){
+  if((typ & kAccessRead) && !(typ & kAccessNoRodata)){
     if(local_read_maps[static_cast<u32>(cur.sid())].Insert(addr,cur.raw()) && read_access_map->Insert(addr,cur.sid())){
       return false;
     }
   }
+  // if(typ & kAccessRead){
+  //   local_read_maps[static_cast<u32>(cur.sid())].Insert(addr,cur.raw());
+  //   read_access_map->Insert(addr,cur.sid());
+  // }
   // We could also replace different sid's if access is the same,
   // rw weaker and happens before. However, just checking access below
   // is not enough because we also need to check that !both_read_or_atomic
@@ -447,6 +452,7 @@ STORE : {
       index = (atomic_load_relaxed(&thr->trace_pos) / 2) % 16;
   }
   StoreShadow(&shadow_mem[index / 4], cur.raw());
+  read_access_map->Remove(addr);
   // We could zero other slots determined by rewrite_mask.
   // That would help other threads to evict better slots,
   // but it's unclear if it's worth it.
@@ -670,14 +676,6 @@ void ShadowSet(RawShadow* p, RawShadow* end, RawShadow v) {
   DCHECK_EQ(reinterpret_cast<uptr>(p) % kAlign, 0);
   DCHECK_EQ(reinterpret_cast<uptr>(end) % kAlign, 0);
 
-  for(uptr i=0;i<end-p;i++){
-    uptr addr = ShadowToMem(&p[i]);
-    uptr addr_off;
-    Shadow shadow = Shadow(p[i]);
-    shadow.GetAccess(&addr_off,nullptr,nullptr);
-    read_access_map->Remove(addr+addr_off);
-  }
-
 #if !TSAN_VECTORIZE
   for (; p < end; p += kShadowCnt) {
     p[0] = v;
@@ -689,7 +687,11 @@ void ShadowSet(RawShadow* p, RawShadow* end, RawShadow v) {
       static_cast<u32>(Shadow::kEmpty), static_cast<u32>(Shadow::kEmpty));
   m128* vp = reinterpret_cast<m128*>(p);
   m128* vend = reinterpret_cast<m128*>(end);
-  for (; vp < vend; vp++) _mm_store_si128(vp, vv);
+  for (; vp < vend; vp++){ 
+    _mm_store_si128(vp, vv);
+    read_access_map->ResetShadow(reinterpret_cast<uptr>(ShadowToMem(reinterpret_cast<RawShadow*>(vp))));
+  }
+
 #endif
 }
 
@@ -765,7 +767,10 @@ void MemoryRangeFreed(ThreadState* thr, uptr pc, uptr addr, uptr size) {
     const m128 shadow = _mm_load_si128((m128*)shadow_mem);
     if (UNLIKELY(CheckRaces(thr, shadow_mem, cur, shadow, access, typ, addr)))
       return;
+    
     _mm_store_si128((m128*)shadow_mem, freed);
+    const uptr cur_addr = reinterpret_cast<uptr>(ShadowToMem(shadow_mem));
+    read_access_map->ResetShadow(cur_addr);
   }
 #else
   for (; size; size -= kShadowCell, shadow_mem += kShadowCnt) {
@@ -799,7 +804,9 @@ ALWAYS_INLINE
 bool MemoryAccessRangeOne(ThreadState* thr, RawShadow* shadow_mem, Shadow cur,
                           AccessType typ) {
   LOAD_CURRENT_SHADOW(cur, shadow_mem);
-  uptr addr = ShadowToMem(shadow_mem);
+  uptr addr_off;
+  cur.GetAccess(&addr_off,nullptr,nullptr);
+  uptr addr = reinterpret_cast<uptr>(ShadowToMem(shadow_mem))+addr_off;
   if (LIKELY(ContainsSameAccess(shadow_mem, cur, shadow, access, typ, thr, addr)))
     return false;
   return CheckRaces(thr, shadow_mem, cur, shadow, access, typ, addr);

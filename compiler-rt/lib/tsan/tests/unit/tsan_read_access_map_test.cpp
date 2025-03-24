@@ -180,4 +180,12 @@ TEST(ReadAccessMap, TestExceedSidSlot){
 
 }
 
+// TEST(ReadAccessMap, TestResetShadow){
+//   TestReadAccessMap<1U, 2U> readAccessMap;
+//   uptr addr1 = 31UL;
+//   uptr addr2 = 32UL;
+
+
+// }
+
 }  // namespace __tsan
