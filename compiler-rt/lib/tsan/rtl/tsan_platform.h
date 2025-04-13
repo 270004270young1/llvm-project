@@ -1024,10 +1024,12 @@ inline uptr RestoreAddr(uptr addr) {
   return SelectMapping<RestoreAddrImpl>(addr);
 }
 
+ALWAYS_INLINE
 uptr ReadAccessMapBeg(void){
   return Mapping48AddressSpace::kReadAccessMapBeg;
 }
 
+ALWAYS_INLINE
 uptr ReadAccessMapEnd(void){
   return Mapping48AddressSpace::kReadAccessMapEnd;
 }
