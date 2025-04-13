@@ -86,6 +86,8 @@ struct Mapping48AddressSpace {
   static const uptr kShadowXor = 0x000000000000ull;
   static const uptr kShadowAdd = 0x100000000000ull;
   static const uptr kVdsoBeg       = 0xf000000000000000ull;
+  static const uptr kReadAccessMapBeg = 0x600000000000ull;
+  static const uptr kReadAccessMapEnd = 0x700000000000ull;
 };
 
 /*
@@ -1020,6 +1022,20 @@ struct RestoreAddrImpl {
 // This is called only during reporting and is not performance-critical.
 inline uptr RestoreAddr(uptr addr) {
   return SelectMapping<RestoreAddrImpl>(addr);
+}
+
+uptr ReadAccessMapBeg(void){
+  return Mapping48AddressSpace::kReadAccessMapBeg;
+}
+
+uptr ReadAccessMapEnd(void){
+  return Mapping48AddressSpace::kReadAccessMapEnd;
+}
+
+ALWAYS_INLINE
+u64* MemToReadAccessMap(uptr addr){
+  return (u64*)(((addr) & ~(Mapping48AddressSpace::kShadowMsk | (kShadowCell - 1))) +
+           Mapping48AddressSpace::kReadAccessMapBeg);
 }
 
 void InitializePlatform();
