@@ -43,7 +43,9 @@ class ReadAccessMap {
     const u32 index = CalcShadowHash(addr);
     u8 gcTracker = 0U;
     //Force this thread to acquire the latest value of gcTracker_[index]
-    atomic_compare_exchange_strong(&gcTracker_[index],&gcTracker,0U,memory_order_acquire);
+    // atomic_compare_exchange_strong(&gcTracker_[index],&gcTracker,0U,memory_order_acquire);
+    gcTracker = atomic_load_acquire(&gcTracker_[index]);
+
     const u8 swapIndex = gcTracker & 2U ? 1 : 0;
 
     Pair* pairs = readAccessMap_[index][swapIndex];
@@ -80,7 +82,8 @@ class ReadAccessMap {
     const u32 index = CalcShadowHash(addr);
     u8 gcTracker = 0U;
     //Force this thread to acquire the latest value of gcTracker_[index]
-    atomic_compare_exchange_strong(&gcTracker_[index],&gcTracker,0U,memory_order_acquire);
+    // atomic_compare_exchange_strong(&gcTracker_[index],&gcTracker,0U,memory_order_acquire);
+    gcTracker = atomic_load_acquire(&gcTracker_[index]);
     
     const u8 swapIndex = gcTracker & 2U ? 1 : 0;
     const bool gcInProgress = gcTracker & 1U;
@@ -100,15 +103,22 @@ class ReadAccessMap {
       }
     }
 
-    bool hasDeletedState = deleted;
-    for (u32 i = 0; i < ShadowCnt; i++) {
-      if (curKeys[i] == 0UL)
-        return;
-      hasDeletedState |= curVals[i] == DELETE_STATE;
+    u8 hasDeletedState = 0U;
+    for(u32 i = 0; i< ShadowCnt; i++){
+      hasDeletedState += curVals[i] == DELETE_STATE;
     }
 
-    if(!hasDeletedState)
+    if(hasDeletedState < ShadowCnt - 1)
       return;
+    // bool hasDeletedState = deleted;
+    // for (u32 i = 0; i < ShadowCnt; i++) {
+    //   if (curKeys[i] == 0UL)
+    //     return;
+    //   hasDeletedState |= curVals[i] == DELETE_STATE;
+    // }
+
+    // if(!hasDeletedState)
+    //   return;
 
     if (gcInProgress ||
         !atomic_compare_exchange_strong(&gcTracker_[index], &gcTracker,
@@ -155,6 +165,7 @@ class ReadAccessMap {
         if ((cell & curSlot) == sidSlot)
           return true;
       }
+
     }
     return false;
   }
@@ -196,6 +207,8 @@ class ReadAccessMap {
     Pair* swapPair = readAccessMap_[index][!swapIndex];
 
     for(u32 i=0;i<ShadowCnt;i++){
+      //TODO: Check if the shadow is really the same group with addr; if not dont remove
+      uptr key = atomic_load_relaxed(&curPair[i].key);
       atomic_store_relaxed(&curPair[i].val,DELETE_STATE);
     }
 
@@ -212,16 +225,13 @@ class ReadAccessMap {
     atomic_store_release(&gcTracker_[index],!swapIndex << 1);
   }
 
+  private:
 
-  static const u64 EMPTY_STATE = ((1ULL << 63) - 1ULL);
-  static const u64 DELETE_STATE = (1ULL << 63) - 1ULL | (1ULL << 63);
-
- protected:
-
+  ALWAYS_INLINE
   Pair* FindMatchedPair(int index, uptr addr, u8 swapIndex){
     for (int i = 0; i < kShadowCnt; i++) {
-      if (static_cast<uptr>(atomic_load_acquire(
-              &readAccessMap_[index][swapIndex][i].key)) == addr &&
+      if (atomic_load_acquire(
+              &readAccessMap_[index][swapIndex][i].key) == addr &&
           atomic_load_acquire(&readAccessMap_[index][swapIndex][i].val) !=
               DELETE_STATE) {
         return &readAccessMap_[index][swapIndex][i];
@@ -230,8 +240,8 @@ class ReadAccessMap {
 
     return nullptr;
   }
-  
-//   Pair* ReadAccessMap::GetEmptyPair(int index, uptr addr);
+
+  ALWAYS_INLINE
   bool UpdateCell(Pair* pair, u64 cell, Sid sid){
     for (u64 curSlot = (1ULL << 8) - 1ULL, sidSlot = static_cast<u64>(sid);
         curSlot > 0ULL;
@@ -271,6 +281,13 @@ class ReadAccessMap {
     return idx;
   }
 
+
+  static const u64 EMPTY_STATE = ((1ULL << 63) - 1ULL);
+  static const u64 DELETE_STATE = (1ULL << 63) - 1ULL | (1ULL << 63);
+
+  
+//   Pair* ReadAccessMap::GetEmptyPair(int index, uptr addr);
+  ALWAYS_INLINE
   u32 CalcShadowHash(uptr addr){
     MurMur2Hash64Builder hasher;
     const uptr shadowAddr = reinterpret_cast<uptr>(MemToShadow(addr));
@@ -278,6 +295,7 @@ class ReadAccessMap {
     return static_cast<uptr>(hasher.get()) % MapSize;
   }
 
+protected:
   Pair readAccessMap_[MapSize][2][ShadowCnt];
   atomic_uint8_t gcTracker_[MapSize];
 };

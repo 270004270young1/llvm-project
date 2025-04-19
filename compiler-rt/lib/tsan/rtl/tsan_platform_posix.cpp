@@ -71,6 +71,17 @@ void InitializeShadowMemory() {
   DPrintf("meta shadow: %zx-%zx (%zuGB)\n",
       meta, meta + meta_size, meta_size >> 30);
 
+  const uptr read_access_map = ReadAccessMapBeg();
+  const uptr read_access_map_size = ReadAccessMapEnd() - read_access_map;
+  if (!MmapFixedSuperNoReserve(read_access_map, read_access_map_size, "read access map")) {
+    Printf("FATAL: ThreadSanitizer can not mmap the shadow memory\n");
+    Printf("FATAL: Make sure to compile with -fPIE and to link with -pie.\n");
+    Die();
+  }
+  DontDumpShadow(read_access_map, read_access_map_size);
+  DPrintf("read access map: %zx-%zx (%zuGB)\n",
+      read_access_map, read_access_map + read_access_map_size,read_access_map_size >> 30);
+
   InitializeShadowMemoryPlatform();
 
   on_initialize = reinterpret_cast<void (*)(void)>(
